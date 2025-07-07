@@ -17,6 +17,8 @@
 int walls_x[2];
 int walls_y[2];
 
+#define NUM_WALLS       2
+
 enum GameState {
     MainMenu,
     Playing,
@@ -39,6 +41,12 @@ TFT_eSPI tft = TFT_eSPI();
 TFT_eSprite backgroundSpr = TFT_eSprite(&tft);
 TFT_eSprite flappySpr = TFT_eSprite(&tft);
 
+TFT_eSprite wallSpr[NUM_WALLS] = {
+  TFT_eSprite(&tft),
+  TFT_eSprite(&tft)
+};
+
+void drawWallSprite(uint8_t wall, int gapY);
 void screenWipe(int speed);
 
 void setup() {
@@ -54,6 +62,11 @@ void setup() {
     backgroundSpr.setSwapBytes(true);
 
     flappySpr.createSprite(BIRD_WIDTH, BIRD_HEIGHT);
+
+    for(int wall=0; wall<NUM_WALLS; wall++) {
+        wallSpr[wall].createSprite(WALL_WIDTH, CANVAS_HEIGHT);
+        wallSpr[wall].setSwapBytes(true);
+    }
 
     pinMode(FLAP_BUTTON, INPUT_PULLUP);
 
@@ -113,8 +126,8 @@ void loop() {
         backgroundSpr.fillSprite(TFT_BLUE);
 
         for (int i=0; i<2; i++) {
-            backgroundSpr.fillRect(walls_x[i], 0, WALL_WIDTH, walls_y[i], TFT_GREEN);
-            backgroundSpr.fillRect(walls_x[i], walls_y[i] + WALL_GAP, WALL_WIDTH, CANVAS_HEIGHT-walls_y[i]+WALL_GAP, TFT_GREEN);
+            drawWallSprite(i, walls_y[i]);
+            wallSpr[i].pushToSprite(&backgroundSpr, walls_x[i], 0, TFT_BLUE);
 
             if (walls_x[i] < 0) {
                 walls_y[i] = random(0, CANVAS_HEIGHT - WALL_GAP);
@@ -136,8 +149,9 @@ void loop() {
             walls_x[i] -= 5;
         }
 
-        backgroundSpr.drawString(String(score),100,0,2);
+        backgroundSpr.drawString(String(score),100,0,3);
 
+        flappySpr.fillSprite(TFT_BLACK);
         flappySpr.pushImage(0,0,32,26,fb2);
         flappySpr.pushToSprite(&backgroundSpr,40,bird::y,TFT_BLACK);
 
@@ -152,6 +166,12 @@ void loop() {
 
     }
 
+}
+
+void drawWallSprite(uint8_t wall ,int gap_y) {
+    wallSpr[wall].fillSprite(TFT_BLUE);
+    wallSpr[wall].fillRect(0, 0, WALL_WIDTH, gap_y, TFT_GREEN);
+    wallSpr[wall].fillRect(0, gap_y + WALL_GAP, WALL_WIDTH, CANVAS_HEIGHT - (gap_y + WALL_GAP), TFT_GREEN);
 }
 
 void screenWipe(int speed) {
