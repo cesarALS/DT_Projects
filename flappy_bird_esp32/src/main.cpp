@@ -2,7 +2,7 @@
 #include "Fb2.h"
 
 #define FLAP_BUTTON     13
-#define RANDOM_SEED_PIN 36 
+#define RANDOM_SEED_PIN 36
 
 // The width of the game canvas, which can be smaller than the actual display
 #define CANVAS_WIDTH    240
@@ -16,6 +16,8 @@
 
 int walls_x[2];
 int walls_y[2];
+
+#define NUM_WALLS       2
 
 enum GameState {
     MainMenu,
@@ -39,21 +41,32 @@ TFT_eSPI tft = TFT_eSPI();
 TFT_eSprite backgroundSpr = TFT_eSprite(&tft);
 TFT_eSprite flappySpr = TFT_eSprite(&tft);
 
+TFT_eSprite wallSpr[NUM_WALLS] = {
+  TFT_eSprite(&tft),
+  TFT_eSprite(&tft)
+};
+
+void drawWallSprite(uint8_t wall, int gapY);
 void screenWipe(int speed);
 
 void setup() {
-    
+
     Serial.begin(115200);
-    
+
     tft.init();
-    tft.setRotation(1); 
+    tft.setRotation(1);
     tft.setSwapBytes(true);
     tft.fillScreen(TFT_BLACK);
-    
+
     backgroundSpr.createSprite(CANVAS_WIDTH, CANVAS_HEIGHT);
-    backgroundSpr.setSwapBytes(true);   
-    
+    backgroundSpr.setSwapBytes(true);
+
     flappySpr.createSprite(BIRD_WIDTH, BIRD_HEIGHT);
+
+    for(int wall=0; wall<NUM_WALLS; wall++) {
+        wallSpr[wall].createSprite(WALL_WIDTH, CANVAS_HEIGHT);
+        wallSpr[wall].setSwapBytes(true);
+    }
 
     pinMode(FLAP_BUTTON, INPUT_PULLUP);
 
@@ -66,33 +79,33 @@ void setup() {
 void loop() {
 
     if (currentGameState == GameState::MainMenu) {
-        
-        backgroundSpr.setTextColor(TFT_BLACK,TFT_CYAN);     
-        
+
+        backgroundSpr.setTextColor(TFT_BLACK,TFT_CYAN);
+
         backgroundSpr.fillSprite(TFT_CYAN);
         backgroundSpr.drawString("Flappy Bird!", CANVAS_WIDTH/4, 10, 4);
 
         backgroundSpr.drawString("Press Button to Start", CANVAS_WIDTH/4, 50, 2);
 
         backgroundSpr.pushSprite(0,0);
-        
+
         while (digitalRead(FLAP_BUTTON) == LOW);
 
         walls_x[0] = CANVAS_WIDTH;
         walls_y[0] = CANVAS_HEIGHT / 2 - WALL_GAP / 2;
         walls_x[1] = CANVAS_WIDTH + CANVAS_WIDTH / 2;
-        walls_y[1] = CANVAS_HEIGHT / 2 - WALL_GAP / 1;        
+        walls_y[1] = CANVAS_HEIGHT / 2 - WALL_GAP / 1;
 
         while (digitalRead(FLAP_BUTTON) == HIGH);
 
         int score = 0;
-        backgroundSpr.setTextColor(TFT_WHITE,TFT_BLUE);         
+        backgroundSpr.setTextColor(TFT_WHITE,TFT_BLUE);
         screenWipe(1000);
         currentGameState = GameState::Playing;
     }
 
     else if (currentGameState == GameState::Playing) {
-        
+
         if (digitalRead(FLAP_BUTTON) == LOW) {
             bird::momentum = - 5;
         }
@@ -103,26 +116,24 @@ void loop() {
 
         if(bird::y < 0) {
             bird::y = 0;
-        }        
+        }
 
-        if (bird::y > CANVAS_HEIGHT - BIRD_HEIGHT) {            
+        if (bird::y > CANVAS_HEIGHT - BIRD_HEIGHT) {
             bird::y = CANVAS_HEIGHT - BIRD_HEIGHT;
             bird::momentum = -2;
         }
 
-        backgroundSpr.fillSprite(TFT_BLUE);        
-        
+        backgroundSpr.fillSprite(TFT_BLUE);
+
         for (int i=0; i<2; i++) {
-            backgroundSpr.fillRect(walls_x[i], 0, WALL_WIDTH, walls_y[i], TFT_GREEN);
-            backgroundSpr.fillRect(walls_x[i], walls_y[i] + WALL_GAP, WALL_WIDTH, CANVAS_HEIGHT-walls_y[i]+WALL_GAP, TFT_GREEN);
+            drawWallSprite(i, walls_y[i]);
+            wallSpr[i].pushToSprite(&backgroundSpr, walls_x[i], 0, TFT_BLUE);
 
             if (walls_x[i] < 0) {
                 walls_y[i] = random(0, CANVAS_HEIGHT - WALL_GAP);
                 walls_x[i] = CANVAS_WIDTH;
-            }   
-            
-            Serial.println(walls_x[i]);
-            
+            }
+
             if (walls_x[i] == bird::X) {
                 score++;
             }
@@ -131,39 +142,46 @@ void loop() {
                 (bird::X + BIRD_WIDTH > walls_x[i] && bird::X < walls_x[i] + WALL_WIDTH) // level with wall
                 &&
                 (bird::y < walls_y[i] || bird::y + BIRD_HEIGHT > walls_y[i] + WALL_GAP) // not level with the gap
-            ) { 
+            ) {
                 currentGameState = MainMenu;
-            }            
-            
+            }
+
             walls_x[i] -= 5;
         }
-                
-        backgroundSpr.drawString(String(score),100,0,2);
 
+        backgroundSpr.drawString(String(score),100,0,3);
+
+        flappySpr.fillSprite(TFT_BLACK);
         flappySpr.pushImage(0,0,32,26,fb2);
-        flappySpr.pushToSprite(&backgroundSpr,40,bird::y,TFT_BLACK);        
-        
+        flappySpr.pushToSprite(&backgroundSpr,40,bird::y,TFT_BLACK);
+
         backgroundSpr.pushSprite(0,0);
-        
+
         if(currentGameState == MainMenu) {
             backgroundSpr.drawString("GAME OVER", CANVAS_WIDTH/4, CANVAS_HEIGHT/2, 5);
             backgroundSpr.pushSprite(0,0);
-            delay(1000);            
+            delay(1000);
         }
         else delay(GAME_SPEED);
-        
+
     }
 
 }
 
+void drawWallSprite(uint8_t wall ,int gap_y) {
+    wallSpr[wall].fillSprite(TFT_BLUE);
+    wallSpr[wall].fillRect(0, 0, WALL_WIDTH, gap_y, TFT_GREEN);
+    wallSpr[wall].fillRect(0, gap_y + WALL_GAP, WALL_WIDTH, CANVAS_HEIGHT - (gap_y + WALL_GAP), TFT_GREEN);
+}
+
 void screenWipe(int speed) {
     for (int i = 0; i < CANVAS_HEIGHT; i += speed) {
-        tft.fillRect(0, i, CANVAS_HEIGHT, speed, TFT_BLACK);        
+        tft.fillRect(0, i, CANVAS_HEIGHT, speed, TFT_BLACK);
         delay(20);
     }
-    
+
     for (int i = 0; i < CANVAS_HEIGHT; i += speed) {
-        tft.fillRect(0, i, CANVAS_WIDTH, speed, TFT_WHITE);        
+        tft.fillRect(0, i, CANVAS_WIDTH, speed, TFT_WHITE);
         delay(20);
     }
 }
