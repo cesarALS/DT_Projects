@@ -6,8 +6,8 @@
 #define RANDOM_SEED_PIN 36
 
 // The width of the game canvas, which can be smaller than the actual display
-#define CANVAS_WIDTH    235
-#define CANVAS_HEIGHT   235     // For some reason, the 240 HEIGHT induces issues
+#define CANVAS_WIDTH    238
+#define CANVAS_HEIGHT   238     // For some reason, the 240 HEIGHT induces issues
 
 #define BIRD_WIDTH    32
 #define BIRD_HEIGHT   26
@@ -42,8 +42,6 @@ namespace walls {
 int currentGameState = GameState::MainMenu;
 
 int score=0;
-
-#define GAME_SPEED      1
 
 namespace bird {
 
@@ -84,12 +82,13 @@ void setup() {
     Serial.begin(115200);
 
     tft.init();
-    tft.setRotation(1);
+    tft.setRotation(0);
     tft.setSwapBytes(true);
     tft.fillScreen(TFT_BLACK);
 
     backgroundSpr.createSprite(CANVAS_WIDTH, CANVAS_HEIGHT);
     backgroundSpr.setSwapBytes(true);
+    backgroundSpr.setColorDepth(8);
 
     flappySpr.createSprite(BIRD_WIDTH, BIRD_HEIGHT);
 
@@ -103,6 +102,8 @@ void setup() {
     randomSeed(analogRead(RANDOM_SEED_PIN));
 
     Serial.println("Starting Game!");
+    Serial.println("Height: " + String(tft.height()));
+    Serial.println("Width: " + String(tft.width()));
 
 }
 
@@ -121,9 +122,9 @@ void loop() {
 
         while (digitalRead(FLAP_BUTTON) == LOW);
 
-        walls_x[0] = CANVAS_WIDTH;
+        walls_x[0] = CANVAS_WIDTH - CANVAS_WIDTH%2;
         walls_y[0] = computeNewWall();
-        walls_x[1] = CANVAS_WIDTH + CANVAS_WIDTH / 2;
+        walls_x[1] = CANVAS_WIDTH + CANVAS_WIDTH / 2 - (CANVAS_WIDTH + CANVAS_WIDTH % 2);
         walls_y[1] = computeNewWall();
 
         Serial.println(walls_x[0]);
@@ -133,7 +134,8 @@ void loop() {
 
         int score = 0;
         backgroundSpr.setTextColor(TFT_WHITE,TFT_BLUE);
-        screenWipe(1000);
+        tft.fillScreen(TFT_BLUE);
+        screenWipe(tft.height()/10);
         currentGameState = GameState::Playing;
     }
 
@@ -183,7 +185,6 @@ void loop() {
             score = 0;
             delay(1000);
         }
-        // else delay(GAME_SPEED);
 
     }
 
@@ -216,13 +217,8 @@ void drawWallSprite(uint8_t wall ,int gap_y) {
 }
 
 void screenWipe(int speed) {
-    for (int i = 0; i < CANVAS_HEIGHT; i += speed) {
-        tft.fillRect(0, i, CANVAS_HEIGHT, speed, TFT_BLACK);
-        delay(20);
-    }
-
-    for (int i = 0; i < CANVAS_HEIGHT; i += speed) {
-        tft.fillRect(0, i, CANVAS_WIDTH, speed, TFT_WHITE);
-        delay(20);
+    for (int i = 0; i < tft.height(); i += speed) {
+        tft.fillRect(0, i, tft.height(), speed, TFT_WHITE);
+        delay(30);
     }
 }
