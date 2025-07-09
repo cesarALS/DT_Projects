@@ -149,7 +149,7 @@ void loop() {
             walls_x[i] -= 5;
         }
 
-        backgroundSpr.drawString(String(score),100,0,3);
+        backgroundSpr.drawString(String(score),100,0,4);
 
         flappySpr.fillSprite(TFT_BLACK);
         flappySpr.pushImage(0,0,32,26,fb2);
