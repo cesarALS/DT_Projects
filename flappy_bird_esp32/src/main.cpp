@@ -1,5 +1,6 @@
 #include <TFT_eSPI.h>
 #include "Fb2.h"
+#include "math.h"
 
 #define FLAP_BUTTON     13
 #define RANDOM_SEED_PIN 36
@@ -45,9 +46,23 @@ int score=0;
 #define GAME_SPEED      1
 
 namespace bird {
+
     constexpr int X = 45;
-    int y = 15;
-    int momentum;
+    int y = CANVAS_HEIGHT/2;
+
+    float gravity = 0.5;
+    float impulse = -4.5;
+    float velocity = 0;
+
+    void displace(bool pressed) {
+        velocity += gravity;
+        y += (int)floor(velocity);
+        y = max(0, min(y, CANVAS_HEIGHT-BIRD_HEIGHT));
+        if(pressed){
+            velocity = impulse;
+        }
+    }
+
 }
 
 TFT_eSPI tft = TFT_eSPI();
@@ -124,22 +139,7 @@ void loop() {
 
     else if (currentGameState == GameState::Playing) {
 
-        if (digitalRead(FLAP_BUTTON) == LOW) {
-            bird::momentum = - 3;
-        }
-
-        bird::momentum += 1;
-
-        bird::y += bird::momentum;
-
-        if(bird::y < 0) {
-            bird::y = 0;
-        }
-
-        if (bird::y > CANVAS_HEIGHT - BIRD_HEIGHT) {
-            bird::y = CANVAS_HEIGHT - BIRD_HEIGHT;
-            bird::momentum = -2;
-        }
+        bird::displace(digitalRead(FLAP_BUTTON) == LOW);
 
         backgroundSpr.fillSprite(TFT_BLUE);
 
