@@ -5,14 +5,11 @@
 #define RANDOM_SEED_PIN 36
 
 // The width of the game canvas, which can be smaller than the actual display
-#define CANVAS_WIDTH    240
-#define CANVAS_HEIGHT   238     // For some reason, the 240 HEIGHT induces issues
+#define CANVAS_WIDTH    235
+#define CANVAS_HEIGHT   235     // For some reason, the 240 HEIGHT induces issues
 
 #define BIRD_WIDTH    32
 #define BIRD_HEIGHT   26
-
-#define WALL_WIDTH      30
-#define WALL_GAP        95
 
 int walls_x[2];
 int walls_y[2];
@@ -24,11 +21,28 @@ enum GameState {
     Playing,
 };
 
+namespace walls {
+
+    // Constants
+
+    constexpr uint8_t WIDTH             = 30;
+    constexpr uint8_t GAP               = 95;
+    constexpr uint8_t MINIMAL_HEIGHT    = 20;       // The minimum height of a semi-wall
+
+    constexpr uint8_t LOWER_BOUND       = MINIMAL_HEIGHT;
+    constexpr uint8_t UPPER_BOUND       = CANVAS_HEIGHT - walls::GAP - walls::MINIMAL_HEIGHT;
+
+    constexpr uint8_t NEW_WALL_DIFFERENTIAL = 100; // The maximum difference of between concurrent walls
+
+    int lastHeight = CANVAS_HEIGHT/2;
+
+};
+
 int currentGameState = GameState::MainMenu;
 
 int score=0;
 
-#define GAME_SPEED      20
+#define GAME_SPEED      1
 
 namespace bird {
     constexpr int X = 45;
@@ -48,6 +62,7 @@ TFT_eSprite wallSpr[NUM_WALLS] = {
 
 void drawWallSprite(uint8_t wall, int gapY);
 void screenWipe(int speed);
+int computeNewWall();
 
 void setup() {
 
@@ -64,7 +79,7 @@ void setup() {
     flappySpr.createSprite(BIRD_WIDTH, BIRD_HEIGHT);
 
     for(int wall=0; wall<NUM_WALLS; wall++) {
-        wallSpr[wall].createSprite(WALL_WIDTH, CANVAS_HEIGHT);
+        wallSpr[wall].createSprite(walls::WIDTH, CANVAS_HEIGHT);
         wallSpr[wall].setSwapBytes(true);
     }
 
@@ -92,9 +107,12 @@ void loop() {
         while (digitalRead(FLAP_BUTTON) == LOW);
 
         walls_x[0] = CANVAS_WIDTH;
-        walls_y[0] = CANVAS_HEIGHT / 2 - WALL_GAP / 2;
+        walls_y[0] = computeNewWall();
         walls_x[1] = CANVAS_WIDTH + CANVAS_WIDTH / 2;
-        walls_y[1] = CANVAS_HEIGHT / 2 - WALL_GAP / 1;
+        walls_y[1] = computeNewWall();
+
+        Serial.println(walls_x[0]);
+        Serial.println(walls_x[1]);
 
         while (digitalRead(FLAP_BUTTON) == HIGH);
 
@@ -107,7 +125,7 @@ void loop() {
     else if (currentGameState == GameState::Playing) {
 
         if (digitalRead(FLAP_BUTTON) == LOW) {
-            bird::momentum = - 5;
+            bird::momentum = - 3;
         }
 
         bird::momentum += 1;
@@ -130,23 +148,25 @@ void loop() {
             wallSpr[i].pushToSprite(&backgroundSpr, walls_x[i], 0, TFT_BLUE);
 
             if (walls_x[i] < 0) {
-                walls_y[i] = random(0, CANVAS_HEIGHT - WALL_GAP);
+                walls_y[i] = computeNewWall();
                 walls_x[i] = CANVAS_WIDTH;
             }
+
+            // Serial.println(walls_x[i]);
 
             if (walls_x[i] == bird::X) {
                 score++;
             }
 
             if (
-                (bird::X + BIRD_WIDTH > walls_x[i] && bird::X < walls_x[i] + WALL_WIDTH) // level with wall
+                (bird::X + BIRD_WIDTH > walls_x[i] && bird::X < walls_x[i] + walls::WIDTH) // level with wall
                 &&
-                (bird::y < walls_y[i] || bird::y + BIRD_HEIGHT > walls_y[i] + WALL_GAP) // not level with the gap
+                (bird::y < walls_y[i] || bird::y + BIRD_HEIGHT > walls_y[i] + walls::GAP) // not level with the gap
             ) {
                 currentGameState = MainMenu;
             }
 
-            walls_x[i] -= 5;
+            walls_x[i] -= 2;
         }
 
         backgroundSpr.drawString(String(score),100,0,4);
@@ -160,18 +180,39 @@ void loop() {
         if(currentGameState == MainMenu) {
             backgroundSpr.drawString("GAME OVER", CANVAS_WIDTH/4, CANVAS_HEIGHT/2, 5);
             backgroundSpr.pushSprite(0,0);
+            score = 0;
             delay(1000);
         }
-        else delay(GAME_SPEED);
+        // else delay(GAME_SPEED);
 
     }
 
 }
 
+// Get the random number that will be used to create the new wall
+int computeNewWall() {
+
+    int lowerBound, upperBound;
+
+    if(walls::lastHeight - walls::LOWER_BOUND > walls::NEW_WALL_DIFFERENTIAL/2) {
+        lowerBound = walls::lastHeight - walls::NEW_WALL_DIFFERENTIAL/2;
+    } else lowerBound = walls::LOWER_BOUND;
+
+    if(walls::UPPER_BOUND - walls::lastHeight > walls::NEW_WALL_DIFFERENTIAL/2) {
+        upperBound = walls::lastHeight + walls::NEW_WALL_DIFFERENTIAL/2;
+    } else upperBound = walls::UPPER_BOUND;
+
+    int newWall = random(lowerBound, upperBound);
+
+    walls::lastHeight = newWall;
+    return newWall;
+
+}
+
 void drawWallSprite(uint8_t wall ,int gap_y) {
     wallSpr[wall].fillSprite(TFT_BLUE);
-    wallSpr[wall].fillRect(0, 0, WALL_WIDTH, gap_y, TFT_GREEN);
-    wallSpr[wall].fillRect(0, gap_y + WALL_GAP, WALL_WIDTH, CANVAS_HEIGHT - (gap_y + WALL_GAP), TFT_GREEN);
+    wallSpr[wall].fillRect(0, 0, walls::WIDTH, gap_y, TFT_GREEN);
+    wallSpr[wall].fillRect(0, gap_y + walls::GAP, walls::WIDTH, CANVAS_HEIGHT - (gap_y + walls::GAP), TFT_GREEN);
 }
 
 void screenWipe(int speed) {
