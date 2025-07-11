@@ -1,32 +1,45 @@
-#include <WiFi.h>
-#include "time.h"
+#include "hour.h"
 
-const char* ssid       = "YOUR_SSID";       //name of your Wi-Fi network
-const char* password   = "YOUR_PASS";       //password
+namespace hour {
 
-const char* ntpServer = "pool.ntp.org";
-const long  gmtOffset_sec = -18000;         //Colombia: 5 hours behind Coordinated Universal Time (UTC): -5 x 60 x 60
-const int   daylightOffset_sec = 0;         //no daylight offset
+  void init() {
 
-void printLocalTime()
-{
-  struct tm timeinfo;
-  if(!getLocalTime(&timeinfo)){
-    Serial.println("Failed to obtain time");
-    return;
+    setlocale(LC_ALL, "es_ES.UTF-8");
+
+    Serial.printf("Starting connection to %s\n", SSID);
+    WiFi.begin(SSID, PASSWORD);
+    connectedToWifi = false;
+
   }
-  Serial.println(&timeinfo, "%A, %B %d %Y %H:%M:%S");
+
+  bool getLocalTime() {
+
+    configTime(GMT_OFFSET_SEC, DAY_LIGHT_OFFSET_SEC, NTP_SERVER);
+    bool timeAvailable = getLocalTime(&timeInfo);
+
+    if    (!timeAvailable) Serial.println("Failed to obtain time");
+    else  {
+      strftime(buffer, sizeof(buffer), TIME_FORMAT, &timeInfo);
+      Serial.println(&timeInfo, TIME_FORMAT);
+    }
+
+    return timeAvailable;
+  }
+
+  void isAlreadyConnected() {
+    if (WiFi.status() != WL_CONNECTED) {
+        Serial.printf("Connecting to %s\n", SSID);
+        return;
+    }
+    Serial.printf("Connected to %s\n", SSID);
+    connectedToWifi = true;
+  }
+
+  void isWifiWorking () {
+    if(WiFi.status() == WL_CONNECTED) connectionWorking = true;
+    Serial.printf("Connection to %s is not working\n", SSID);
+    connectionWorking = false;
+  }
+
 }
 
-void connectToWifi() {
-  Serial.printf("Connecting to %s ", ssid);
-  WiFi.begin(ssid, password);
-  while (WiFi.status() != WL_CONNECTED) {
-      delay(500);
-      Serial.print(".");
-  }
-  Serial.println(" CONNECTED");
-
-  //init and get the time
-  configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
-}
