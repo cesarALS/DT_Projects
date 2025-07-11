@@ -5,26 +5,19 @@
 #define FLAP_BUTTON     13
 #define RANDOM_SEED_PIN 36
 
-// The width of the game canvas, which can be smaller than the actual display
 #define CANVAS_WIDTH    238
 #define CANVAS_HEIGHT   238     // For some reason, the 240 HEIGHT induces issues
-
-#define BIRD_WIDTH    32
-#define BIRD_HEIGHT   26
-
-int walls_x[2];
-int walls_y[2];
-
-#define NUM_WALLS       2
 
 enum GameState {
     MainMenu,
     Playing,
 };
+int currentGameState = GameState::MainMenu;
+int score=0;
 
 namespace walls {
 
-    // Constants
+    constexpr uint8_t NUM = 2;
 
     constexpr uint8_t WIDTH             = 30;
     constexpr uint8_t GAP               = 95;
@@ -37,16 +30,31 @@ namespace walls {
 
     int lastHeight = CANVAS_HEIGHT/2;
 
+    int x[NUM];
+    int y[NUM];
+
+    TFT_eSprite spr[walls::NUM] = {
+        TFT_eSprite(&tft),
+        TFT_eSprite(&tft)
+    };
+
+    void drawSprite(uint8_t wall ,int gap_y) {
+        spr[wall].fillSprite(TFT_BLUE);
+        spr[wall].fillRect(0, 0, WIDTH, gap_y, TFT_GREEN);
+        spr[wall].fillRect(0, gap_y + GAP, WIDTH, CANVAS_HEIGHT - (gap_y + GAP), TFT_GREEN);
+    }
+
 };
-
-int currentGameState = GameState::MainMenu;
-
-int score=0;
 
 namespace bird {
 
+    constexpr int WIDTH     = 32;
+    constexpr int HEIGHT    = 26;
+
     constexpr int X = 45;
     int y = CANVAS_HEIGHT/2;
+
+    TFT_eSprite spr = TFT_eSprite(&tft);
 
     float gravity = 0.5;
     float impulse = -4.5;
@@ -55,7 +63,7 @@ namespace bird {
     void displace(bool pressed) {
         velocity += gravity;
         y += (int)floor(velocity);
-        y = max(0, min(y, CANVAS_HEIGHT-BIRD_HEIGHT));
+        y = max(0, min(y, CANVAS_HEIGHT-HEIGHT));
         if(pressed){
             velocity = impulse;
         }
@@ -66,14 +74,7 @@ namespace bird {
 TFT_eSPI tft = TFT_eSPI();
 
 TFT_eSprite backgroundSpr = TFT_eSprite(&tft);
-TFT_eSprite flappySpr = TFT_eSprite(&tft);
 
-TFT_eSprite wallSpr[NUM_WALLS] = {
-  TFT_eSprite(&tft),
-  TFT_eSprite(&tft)
-};
-
-void drawWallSprite(uint8_t wall, int gapY);
 void screenWipe(int speed);
 int computeNewWall();
 
@@ -90,11 +91,11 @@ void setup() {
     backgroundSpr.setSwapBytes(true);
     backgroundSpr.setColorDepth(8);
 
-    flappySpr.createSprite(BIRD_WIDTH, BIRD_HEIGHT);
+    bird::spr.createSprite(bird::WIDTH, bird::HEIGHT);
 
-    for(int wall=0; wall<NUM_WALLS; wall++) {
-        wallSpr[wall].createSprite(walls::WIDTH, CANVAS_HEIGHT);
-        wallSpr[wall].setSwapBytes(true);
+    for(int wall=0; wall<walls::NUM; wall++) {
+        walls::spr[wall].createSprite(walls::WIDTH, CANVAS_HEIGHT);
+        walls::spr[wall].setSwapBytes(true);
     }
 
     pinMode(FLAP_BUTTON, INPUT_PULLUP);
@@ -122,13 +123,13 @@ void loop() {
 
         while (digitalRead(FLAP_BUTTON) == LOW);
 
-        walls_x[0] = CANVAS_WIDTH - CANVAS_WIDTH%2;
-        walls_y[0] = computeNewWall();
-        walls_x[1] = CANVAS_WIDTH + CANVAS_WIDTH / 2 - (CANVAS_WIDTH + CANVAS_WIDTH % 2);
-        walls_y[1] = computeNewWall();
+        walls::x[0] = CANVAS_WIDTH - CANVAS_WIDTH%2;
+        walls::y[0] = computeNewWall();
+        walls::x[1] = CANVAS_WIDTH + CANVAS_WIDTH / 2 - (CANVAS_WIDTH + CANVAS_WIDTH % 2);
+        walls::y[1] = computeNewWall();
 
-        Serial.println(walls_x[0]);
-        Serial.println(walls_x[1]);
+        Serial.println(walls::x[0]);
+        Serial.println(walls::x[1]);
 
         while (digitalRead(FLAP_BUTTON) == HIGH);
 
@@ -146,36 +147,36 @@ void loop() {
         backgroundSpr.fillSprite(TFT_BLUE);
 
         for (int i=0; i<2; i++) {
-            drawWallSprite(i, walls_y[i]);
-            wallSpr[i].pushToSprite(&backgroundSpr, walls_x[i], 0, TFT_BLUE);
+            walls::drawSprite(i, walls::y[i]);
+            walls::spr[i].pushToSprite(&backgroundSpr, walls::x[i], 0, TFT_BLUE);
 
-            if (walls_x[i] < 0) {
-                walls_y[i] = computeNewWall();
-                walls_x[i] = CANVAS_WIDTH;
+            if (walls::x[i] < 0) {
+                walls::y[i] = computeNewWall();
+                walls::x[i] = CANVAS_WIDTH;
             }
 
             // Serial.println(walls_x[i]);
 
-            if (walls_x[i] == bird::X) {
+            if (walls::x[i] == bird::X) {
                 score++;
             }
 
             if (
-                (bird::X + BIRD_WIDTH > walls_x[i] && bird::X < walls_x[i] + walls::WIDTH) // level with wall
+                (bird::X + bird::WIDTH > walls::x[i] && bird::X < walls::x[i] + walls::WIDTH) // level with wall
                 &&
-                (bird::y < walls_y[i] || bird::y + BIRD_HEIGHT > walls_y[i] + walls::GAP) // not level with the gap
+                (bird::y < walls::y[i] || bird::y + bird::HEIGHT > walls::y[i] + walls::GAP) // not level with the gap
             ) {
                 currentGameState = MainMenu;
             }
 
-            walls_x[i] -= 2;
+            walls::x[i] -= 2;
         }
 
         backgroundSpr.drawString(String(score),100,0,4);
 
-        flappySpr.fillSprite(TFT_BLACK);
-        flappySpr.pushImage(0,0,32,26,fb2);
-        flappySpr.pushToSprite(&backgroundSpr,40,bird::y,TFT_BLACK);
+        bird::spr.fillSprite(TFT_BLACK);
+        bird::spr.pushImage(0,0,32,26,fb2);
+        bird::spr.pushToSprite(&backgroundSpr,40,bird::y,TFT_BLACK);
 
         backgroundSpr.pushSprite(0,0);
 
@@ -208,12 +209,6 @@ int computeNewWall() {
     walls::lastHeight = newWall;
     return newWall;
 
-}
-
-void drawWallSprite(uint8_t wall ,int gap_y) {
-    wallSpr[wall].fillSprite(TFT_BLUE);
-    wallSpr[wall].fillRect(0, 0, walls::WIDTH, gap_y, TFT_GREEN);
-    wallSpr[wall].fillRect(0, gap_y + walls::GAP, walls::WIDTH, CANVAS_HEIGHT - (gap_y + walls::GAP), TFT_GREEN);
 }
 
 void screenWipe(int speed) {
