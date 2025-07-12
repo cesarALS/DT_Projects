@@ -15,24 +15,34 @@ enum GameState {
 int currentGameState = GameState::MainMenu;
 int score=0;
 
+TFT_eSPI tft = TFT_eSPI();
+TFT_eSprite backgroundSpr = TFT_eSprite(&tft);
+
 namespace walls {
 
     constexpr uint8_t NUM = 2;
 
     constexpr uint8_t WIDTH             = 30;
     constexpr uint8_t GAP               = 95;
-    constexpr uint8_t MINIMAL_HEIGHT    = 20;       // The minimum height of a semi-wall
+    constexpr uint8_t MINIMAL_HEIGHT    = 20;                   // The minimum height of a semi-wall
+    constexpr uint8_t BETWEEN_WALLS_GAP = CANVAS_WIDTH / 2;     // Wall between differents walls
+    constexpr uint8_t FIRST_WALL        = CANVAS_WIDTH * 0.75;  // First wall of the game
 
     constexpr uint8_t LOWER_BOUND       = MINIMAL_HEIGHT;
     constexpr uint8_t UPPER_BOUND       = CANVAS_HEIGHT - walls::GAP - walls::MINIMAL_HEIGHT;
 
-    constexpr uint8_t NEW_WALL_DIFFERENTIAL = 100; // The maximum difference of between concurrent walls
+    constexpr uint8_t NEW_WALL_DIFFERENTIAL = 110; // The maximum difference of between concurrent walls
+
+    constexpr uint8_t DISPLACEMENT      = 3;
 
     int lastHeight = CANVAS_HEIGHT/2;
 
     int x[NUM];
     int y[NUM];
 
+    uint8_t closestToBird = 0;
+
+    // TODO: improve this logic, by allowing more than one wall sprite
     TFT_eSprite spr[walls::NUM] = {
         TFT_eSprite(&tft),
         TFT_eSprite(&tft)
@@ -42,6 +52,36 @@ namespace walls {
         spr[wall].fillSprite(TFT_BLUE);
         spr[wall].fillRect(0, 0, WIDTH, gap_y, TFT_GREEN);
         spr[wall].fillRect(0, gap_y + GAP, WIDTH, CANVAS_HEIGHT - (gap_y + GAP), TFT_GREEN);
+    }
+
+    void computeNew(uint8_t index, int x) {
+
+        int lowerBound, upperBound;
+
+        if(walls::lastHeight - walls::LOWER_BOUND > walls::NEW_WALL_DIFFERENTIAL/2) {
+            lowerBound = walls::lastHeight - walls::NEW_WALL_DIFFERENTIAL/2;
+        } else lowerBound = walls::LOWER_BOUND;
+
+        if(walls::UPPER_BOUND - walls::lastHeight > walls::NEW_WALL_DIFFERENTIAL/2) {
+            upperBound = walls::lastHeight + walls::NEW_WALL_DIFFERENTIAL/2;
+        } else upperBound = walls::UPPER_BOUND;
+
+        int newWall = random(lowerBound, upperBound);
+
+        walls::lastHeight = newWall;
+
+        walls::x[index] = x;
+        walls::y[index] = newWall;
+
+    }
+
+    void reset() {
+
+        for (uint8_t wall=0; wall<NUM; wall++){
+            computeNew(wall, FIRST_WALL+BETWEEN_WALLS_GAP*wall);
+        }
+
+        walls::closestToBird = 0;
     }
 
 };
@@ -56,27 +96,27 @@ namespace bird {
 
     TFT_eSprite spr = TFT_eSprite(&tft);
 
-    float gravity = 0.5;
-    float impulse = -4.5;
+    constexpr float GRAVITY = 0.5;
+    constexpr float IMPULSE = -4.5;
     float velocity = 0;
 
     void displace(bool pressed) {
-        velocity += gravity;
+        velocity += GRAVITY;
         y += (int)floor(velocity);
         y = max(0, min(y, CANVAS_HEIGHT-HEIGHT));
         if(pressed){
-            velocity = impulse;
+            velocity = IMPULSE;
         }
+    }
+
+    void reset() {
+        y = CANVAS_HEIGHT/2;
+        velocity = 0;
     }
 
 }
 
-TFT_eSPI tft = TFT_eSPI();
-
-TFT_eSprite backgroundSpr = TFT_eSprite(&tft);
-
 void screenWipe(int speed);
-int computeNewWall();
 
 void setup() {
 
@@ -96,6 +136,7 @@ void setup() {
     for(int wall=0; wall<walls::NUM; wall++) {
         walls::spr[wall].createSprite(walls::WIDTH, CANVAS_HEIGHT);
         walls::spr[wall].setSwapBytes(true);
+        walls::spr[wall].setColorDepth(8);
     }
 
     pinMode(FLAP_BUTTON, INPUT_PULLUP);
@@ -123,13 +164,8 @@ void loop() {
 
         while (digitalRead(FLAP_BUTTON) == LOW);
 
-        walls::x[0] = CANVAS_WIDTH - CANVAS_WIDTH%2;
-        walls::y[0] = computeNewWall();
-        walls::x[1] = CANVAS_WIDTH + CANVAS_WIDTH / 2 - (CANVAS_WIDTH + CANVAS_WIDTH % 2);
-        walls::y[1] = computeNewWall();
-
-        Serial.println(walls::x[0]);
-        Serial.println(walls::x[1]);
+        walls::reset();
+        bird::reset();
 
         while (digitalRead(FLAP_BUTTON) == HIGH);
 
@@ -146,30 +182,28 @@ void loop() {
 
         backgroundSpr.fillSprite(TFT_BLUE);
 
-        for (int i=0; i<2; i++) {
+        for (int i=0; i<walls::NUM; i++) {
             walls::drawSprite(i, walls::y[i]);
             walls::spr[i].pushToSprite(&backgroundSpr, walls::x[i], 0, TFT_BLUE);
 
-            if (walls::x[i] < 0) {
-                walls::y[i] = computeNewWall();
-                walls::x[i] = CANVAS_WIDTH;
+            if (walls::x[i] < 0) walls::computeNew(i, CANVAS_WIDTH);
+
+            if(i == walls::closestToBird) {
+                if (walls::x[i] <= bird::X) {
+                    score++;
+                    walls::closestToBird = (walls::closestToBird + 1) % walls::NUM;
+                }
+
+                if (
+                    (bird::X + bird::WIDTH > walls::x[i] && bird::X < walls::x[i] + walls::WIDTH) // level with wall
+                    &&
+                    (bird::y < walls::y[i] || bird::y + bird::HEIGHT > walls::y[i] + walls::GAP) // not level with the gap
+                ) {
+                    currentGameState = MainMenu;
+                }
+
             }
-
-            // Serial.println(walls_x[i]);
-
-            if (walls::x[i] == bird::X) {
-                score++;
-            }
-
-            if (
-                (bird::X + bird::WIDTH > walls::x[i] && bird::X < walls::x[i] + walls::WIDTH) // level with wall
-                &&
-                (bird::y < walls::y[i] || bird::y + bird::HEIGHT > walls::y[i] + walls::GAP) // not level with the gap
-            ) {
-                currentGameState = MainMenu;
-            }
-
-            walls::x[i] -= 2;
+            walls::x[i] -= walls::DISPLACEMENT;
         }
 
         backgroundSpr.drawString(String(score),100,0,4);
@@ -188,26 +222,6 @@ void loop() {
         }
 
     }
-
-}
-
-// Get the random number that will be used to create the new wall
-int computeNewWall() {
-
-    int lowerBound, upperBound;
-
-    if(walls::lastHeight - walls::LOWER_BOUND > walls::NEW_WALL_DIFFERENTIAL/2) {
-        lowerBound = walls::lastHeight - walls::NEW_WALL_DIFFERENTIAL/2;
-    } else lowerBound = walls::LOWER_BOUND;
-
-    if(walls::UPPER_BOUND - walls::lastHeight > walls::NEW_WALL_DIFFERENTIAL/2) {
-        upperBound = walls::lastHeight + walls::NEW_WALL_DIFFERENTIAL/2;
-    } else upperBound = walls::UPPER_BOUND;
-
-    int newWall = random(lowerBound, upperBound);
-
-    walls::lastHeight = newWall;
-    return newWall;
 
 }
 
