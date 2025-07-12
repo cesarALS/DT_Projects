@@ -5,8 +5,9 @@
 #define FLAP_BUTTON     13
 #define RANDOM_SEED_PIN 36
 
-#define CANVAS_WIDTH    238
-#define CANVAS_HEIGHT   238     // For some reason, the 240 HEIGHT induces issues
+#define CANVAS_WIDTH    236
+#define CANVAS_HEIGHT   236     // For some reason, the 240 HEIGHT induces issues
+#define CANVAS_PADDING  1       // The padding of the game canvas
 
 enum GameState {
     MainMenu,
@@ -49,7 +50,7 @@ namespace walls {
     };
 
     void drawSprite(uint8_t wall ,int gap_y) {
-        spr[wall].fillSprite(TFT_BLUE);
+        spr[wall].fillSprite(TFT_CYAN);
         spr[wall].fillRect(0, 0, WIDTH, gap_y, TFT_GREEN);
         spr[wall].fillRect(0, gap_y + GAP, WIDTH, CANVAS_HEIGHT - (gap_y + GAP), TFT_GREEN);
     }
@@ -116,7 +117,9 @@ namespace bird {
 
 }
 
+void drawCanvas();
 void screenWipe(int speed);
+void animateTextTopCenter(int speed, const char* text);
 
 void setup() {
 
@@ -126,16 +129,16 @@ void setup() {
     tft.setRotation(0);
     tft.setSwapBytes(true);
     tft.fillScreen(TFT_BLACK);
+    tft.invertDisplay(1);
 
     backgroundSpr.createSprite(CANVAS_WIDTH, CANVAS_HEIGHT);
-    backgroundSpr.setSwapBytes(true);
     backgroundSpr.setColorDepth(8);
 
     bird::spr.createSprite(bird::WIDTH, bird::HEIGHT);
+    bird::spr.setSwapBytes(true);
 
     for(int wall=0; wall<walls::NUM; wall++) {
         walls::spr[wall].createSprite(walls::WIDTH, CANVAS_HEIGHT);
-        walls::spr[wall].setSwapBytes(true);
         walls::spr[wall].setColorDepth(8);
     }
 
@@ -144,8 +147,6 @@ void setup() {
     randomSeed(analogRead(RANDOM_SEED_PIN));
 
     Serial.println("Starting Game!");
-    Serial.println("Height: " + String(tft.height()));
-    Serial.println("Width: " + String(tft.width()));
 
 }
 
@@ -153,14 +154,15 @@ void loop() {
 
     if (currentGameState == GameState::MainMenu) {
 
-        backgroundSpr.setTextColor(TFT_BLACK,TFT_CYAN);
+        tft.fillScreen(TFT_BLACK);
 
-        backgroundSpr.fillSprite(TFT_CYAN);
-        backgroundSpr.drawString("Flappy Bird!", CANVAS_WIDTH/4, 10, 4);
+        backgroundSpr.setTextColor(TFT_BLACK,TFT_GREENYELLOW);
 
-        backgroundSpr.drawString("Press Button to Start", CANVAS_WIDTH/4, 50, 2);
+        backgroundSpr.fillSprite(TFT_GREENYELLOW);
+        backgroundSpr.drawCentreString("Flappy Bird!", CANVAS_WIDTH/2, 10, 4);
+        backgroundSpr.drawCentreString("Press Button to Start", CANVAS_WIDTH/2, 50, 2);
 
-        backgroundSpr.pushSprite(0,0);
+        drawCanvas();
 
         while (digitalRead(FLAP_BUTTON) == LOW);
 
@@ -169,10 +171,10 @@ void loop() {
 
         while (digitalRead(FLAP_BUTTON) == HIGH);
 
-        int score = 0;
-        backgroundSpr.setTextColor(TFT_WHITE,TFT_BLUE);
-        tft.fillScreen(TFT_BLUE);
+        score = 0;
+        backgroundSpr.setTextColor(TFT_BLACK,TFT_CYAN);
         screenWipe(tft.height()/10);
+        tft.fillScreen(TFT_BLACK);
         currentGameState = GameState::Playing;
     }
 
@@ -180,11 +182,11 @@ void loop() {
 
         bird::displace(digitalRead(FLAP_BUTTON) == LOW);
 
-        backgroundSpr.fillSprite(TFT_BLUE);
+        backgroundSpr.fillSprite(TFT_CYAN);
 
         for (int i=0; i<walls::NUM; i++) {
             walls::drawSprite(i, walls::y[i]);
-            walls::spr[i].pushToSprite(&backgroundSpr, walls::x[i], 0, TFT_BLUE);
+            walls::spr[i].pushToSprite(&backgroundSpr, walls::x[i], 0, TFT_CYAN);
 
             if (walls::x[i] < 0) walls::computeNew(i, CANVAS_WIDTH);
 
@@ -206,18 +208,15 @@ void loop() {
             walls::x[i] -= walls::DISPLACEMENT;
         }
 
-        backgroundSpr.drawString(String(score),100,0,4);
+        backgroundSpr.drawCentreString(String(score),CANVAS_WIDTH/2,0,4);
 
         bird::spr.fillSprite(TFT_BLACK);
-        bird::spr.pushImage(0,0,32,26,fb2);
+        bird::spr.pushImage(0,0,bird::WIDTH,bird::HEIGHT,fb2);
         bird::spr.pushToSprite(&backgroundSpr,40,bird::y,TFT_BLACK);
 
-        backgroundSpr.pushSprite(0,0);
-
+        drawCanvas();
         if(currentGameState == MainMenu) {
-            backgroundSpr.drawString("GAME OVER", CANVAS_WIDTH/4, CANVAS_HEIGHT/2, 5);
-            backgroundSpr.pushSprite(0,0);
-            score = 0;
+            animateTextTopCenter(tft.height()/16, "GAME OVER");
             delay(1000);
         }
 
@@ -225,9 +224,23 @@ void loop() {
 
 }
 
+void drawCanvas(){
+    backgroundSpr.pushSprite(CANVAS_PADDING, CANVAS_PADDING);
+}
+
 void screenWipe(int speed) {
     for (int i = 0; i < tft.height(); i += speed) {
         tft.fillRect(0, i, tft.height(), speed, TFT_WHITE);
         delay(30);
     }
+}
+
+void animateTextTopCenter(int speed, const char* text) {
+    backgroundSpr.drawCentreString(text, CANVAS_WIDTH/2, CANVAS_HEIGHT/2-10, 4);
+    drawCanvas();
+//     for (int i=0; i<tft.height()/2; i+=speed) {
+//         backgroundSpr.drawCentreString(text, CANVAS_WIDTH/2, i, 4);
+//         drawCanvas();
+//         delay(50);
+//     }
 }
