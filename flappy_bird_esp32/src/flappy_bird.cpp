@@ -19,9 +19,9 @@ namespace game {
         Serial.println("Starting Game");
     }
 
-    void initializeSprite(TFT_eSprite& spr, int w, int h, bool swap) {
+    void initializeSprite(TFT_eSprite& spr, int w, int h, bool swap, uint8_t colorDepth=COLOR_DEPTH) {
         spr.createSprite(w, h);
-        spr.setColorDepth(COLOR_DEPTH);
+        spr.setColorDepth(colorDepth);
         spr.setSwapBytes(swap);
     }
 
@@ -110,7 +110,7 @@ namespace game {
         float velocity = 0;
 
         void init() {
-            initializeSprite(spr, WIDTH, HEIGHT, false);
+            initializeSprite(spr, WIDTH, HEIGHT, true, 16);
         }
 
         void displace(bool pressed) {

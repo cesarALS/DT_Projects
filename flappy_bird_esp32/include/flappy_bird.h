@@ -14,7 +14,7 @@ namespace game {
 
     void init();
 
-    void initializeSprite(TFT_eSprite& spr, int w, int h, bool swap);
+    void initializeSprite(TFT_eSprite& spr, int w, int h, bool swap, uint8_t colorDepth);
 
     namespace canvas {
 
