@@ -27,8 +27,8 @@ namespace button {
     std::unordered_map<std::string, Button> list;
 
     void init() {
-        list.emplace("left", Button(LEFT));
-        list.emplace("right", Button(RIGHT));
+        list.emplace(LEFT_ID, Button(LEFT));
+        list.emplace(RIGHT_ID, Button(RIGHT));
     }
 }
 

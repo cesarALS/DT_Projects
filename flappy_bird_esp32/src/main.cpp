@@ -14,6 +14,7 @@ void setup() {
     Serial.printf("Free space: %u bytes (%.2f KB)\n", free_space, free_space / 1024.0);
 
     game::init();
+    button::init();
 
 }
 
