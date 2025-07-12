@@ -7,7 +7,7 @@ namespace game {
         tft.init();
         tft.setRotation(0);
         tft.setSwapBytes(true);
-        tft.fillScreen(TFT_BLACK);
+        tft.fillScreen(TFT_GREENYELLOW);
 
         canvas::init();
         bird::init();
@@ -133,17 +133,9 @@ namespace game {
 
         if (state::current == state::opt::Menu) {
 
-            tft.fillScreen(TFT_BLACK);
-
-            canvas::spr.setTextColor(TFT_BLACK,TFT_GREENYELLOW);
-
-            canvas::spr.fillSprite(TFT_GREENYELLOW);
-            canvas::spr.drawCentreString("Flappy Bird!", canvas::WIDTH/2, 10, 4);
-            canvas::spr.drawCentreString("Press Button to Start", canvas::WIDTH/2, 50, 2);
-
-            canvas::draw();
-
-            while (digitalRead(FLAP_BUTTON) == LOW);
+            tft.setTextColor(TFT_BLACK,TFT_GREENYELLOW);
+            tft.drawCentreString("Flappy Bird!", tft.width()/2, 10, 4);
+            tft.drawCentreString("Press Button to Start", tft.width()/2, 50, 2);
 
             walls::reset();
             bird::reset();
@@ -152,7 +144,7 @@ namespace game {
 
             state::score = 0;
             canvas::spr.setTextColor(TFT_BLACK,TFT_CYAN);
-            screenWipe(5, TFT_WHITE);
+            doubleWipe(5, TFT_BLACK);
             tft.fillScreen(TFT_BLACK);
             state::current = state::opt::Playing;
         }
