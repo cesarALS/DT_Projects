@@ -152,7 +152,7 @@ namespace game {
 
             state::score = 0;
             canvas::spr.setTextColor(TFT_BLACK,TFT_CYAN);
-            screenWipe(tft.height()/10);
+            screenWipe(5);
             tft.fillScreen(TFT_BLACK);
             state::current = state::opt::Playing;
         }
