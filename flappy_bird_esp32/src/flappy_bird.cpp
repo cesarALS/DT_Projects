@@ -152,7 +152,7 @@ namespace game {
 
             state::score = 0;
             canvas::spr.setTextColor(TFT_BLACK,TFT_CYAN);
-            screenWipe(5);
+            screenWipe(5, TFT_WHITE);
             tft.fillScreen(TFT_BLACK);
             state::current = state::opt::Playing;
         }
@@ -195,8 +195,10 @@ namespace game {
 
             canvas::draw();
             if(state::current == state::opt::Menu) {
-                animateTextTopCenter(3, "GAME OVER");
                 delay(1000);
+                animateTextTopCenter(3, "GAME OVER", TFT_LIGHTGREY);
+                delay(2000);
+                doubleWipe(3, TFT_GREENYELLOW);
             }
 
         }
