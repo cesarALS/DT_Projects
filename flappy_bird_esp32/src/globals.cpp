@@ -24,11 +24,11 @@ namespace button {
         } else return false;
     }
 
-    std::unordered_map<std::string, Button> list;
+    std::unordered_map<std::string, Button*> list;
 
     void init() {
-        list.emplace(LEFT_ID, Button(LEFT));
-        list.emplace(RIGHT_ID, Button(RIGHT));
+        list[LEFT_ID] = new Button(LEFT);
+        list[RIGHT_ID] = new Button(RIGHT);
     }
 }
 

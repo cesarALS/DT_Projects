@@ -25,7 +25,7 @@ namespace button {
             bool consume();
     };
 
-    extern std::unordered_map<std::string, Button> list;
+    extern std::unordered_map<std::string, Button*> list;
 
     void init();
 }
