@@ -9,7 +9,17 @@ namespace game {
     }
 
     namespace canvas {
+
         TFT_eSprite spr = TFT_eSprite(&tft);
+
+        colorPalette day = {
+            0x66ff, TFT_BLACK, 0x6e84
+        };
+        colorPalette night = {
+            0x196b, TFT_WHITE, 0x5da2
+        };
+
+        colorPalette* currentTime = &day;
 
         void draw(){
             spr.pushSprite(PADDING, PADDING);
@@ -46,9 +56,9 @@ namespace game {
         }
 
         void drawSprite(uint8_t wall ,int gap_y) {
-            spr[wall].fillSprite(TFT_CYAN);
-            spr[wall].fillRect(0, 0, WIDTH, gap_y, TFT_GREEN);
-            spr[wall].fillRect(0, gap_y + GAP, WIDTH, canvas::HEIGHT - (gap_y + GAP), TFT_GREEN);
+            spr[wall].fillSprite(canvas::currentTime->sky);
+            spr[wall].fillRect(0, 0, WIDTH, gap_y, canvas::currentTime->wall);
+            spr[wall].fillRect(0, gap_y + GAP, WIDTH, canvas::HEIGHT - (gap_y + GAP), canvas::currentTime->wall);
         }
 
         void computeNew(uint8_t index, int x) {
@@ -124,8 +134,9 @@ namespace game {
             bird::reset();
 
             if (button::list.at(PLAY_BUTTON)->consumeClick()) {
+                canvas::currentTime = (bool)random(0, 2) ? &canvas::day : &canvas::night;
                 state::score = 0;
-                canvas::spr.setTextColor(TFT_BLACK,TFT_CYAN);
+                canvas::spr.setTextColor(canvas::currentTime->text, canvas::currentTime->sky);
                 screen::doubleWipe(5, TFT_BLACK);
                 tft.fillScreen(TFT_BLACK);
                 button::reset();
@@ -137,7 +148,7 @@ namespace game {
 
             bird::displace(button::list.at(PLAY_BUTTON)->consumePress());
 
-            canvas::spr.fillSprite(TFT_CYAN);
+            canvas::spr.fillSprite(canvas::currentTime->sky);
 
             for (int i=0; i<walls::NUM; i++) {
                 walls::drawSprite(i, walls::y[i]);
@@ -163,7 +174,7 @@ namespace game {
                 walls::x[i] -= walls::DISPLACEMENT;
             }
 
-            canvas::spr.drawCentreString(String(state::score),canvas::WIDTH/2,0,4);
+            canvas::spr.drawCentreString(String(state::score),tft.width()/2,10,4);
 
             bird::spr.fillSprite(TFT_BLACK);
             bird::spr.pushImage(0,0,bird::WIDTH,bird::HEIGHT,fb2);
@@ -172,7 +183,7 @@ namespace game {
             canvas::draw();
             if(state::current == state::opt::Menu) {
                 delay(1000);
-                screen::animateTextTopCenter(3, "GAME OVER", TFT_LIGHTGREY);
+                screen::animateTextTopCenter(3, "GAME OVER", TFT_YELLOW);
                 delay(2000);
                 screen::doubleWipe(3, TFT_GREENYELLOW);
                 button::reset();

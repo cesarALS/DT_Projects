@@ -19,6 +19,17 @@ namespace game {
 
         extern TFT_eSprite spr;
 
+        struct colorPalette {
+            int sky;
+            int text;
+            int wall;
+        };
+
+        extern colorPalette day;
+        extern colorPalette night;
+
+        extern colorPalette* currentTime;
+
         void draw();
         void init();
 
