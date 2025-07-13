@@ -24,8 +24,15 @@ namespace menus {
     void initMenu() {
 
         if (firstEntrance) {
-            tft.fillScreen(TFT_BLACK);
-            tft.drawCentreString("Panda Voyager", tft.width()/2, tft.height()/2-10, 4);
+            tft.fillScreen(TFT_WHITE);
+            tft.setTextColor(TFT_BLACK);
+
+            TFT_eSprite panda = TFT_eSprite(&tft);
+            screen::initializeSprite(panda, PANDA_WIDTH, PANDA_HEIGHT, false, 16);
+            panda.fillSprite(TFT_WHITE);
+            tft.drawCentreString("Panda Voyager", tft.width()/2, tft.height()*0.1, 4);
+            panda.pushImage(0, 0, PANDA_WIDTH, PANDA_HEIGHT, Panda);
+            panda.pushSprite(tft.width()/2-panda.width()/2, tft.height()/2-panda.height()/2);
             firstEntrance = false;
         }
 

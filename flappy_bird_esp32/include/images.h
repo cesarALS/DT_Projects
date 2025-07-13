@@ -67,8 +67,8 @@ const unsigned short fb2[0x340] PROGMEM ={
 // Dimensions    : 120x120 pixels
 // Size          : 28.800 Bytes
 
-#define PANDA_HEIGHT    100
-#define PANDA_WIDTH     100
+#define PANDA_HEIGHT    120
+#define PANDA_WIDTH     120
 
 const unsigned short Panda[0x3840] PROGMEM ={
 0xFFDF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFDF, 0xFFFF, 0xFFDF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFDF, 0xFFFF, 0xFFFF, 0xFFFF,   // 0x0010 (16)
