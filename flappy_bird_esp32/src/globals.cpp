@@ -79,3 +79,18 @@ namespace button {
     }
 }
 
+namespace app {
+
+    Mode currentMode = Mode::FlappyBird;
+    std::unordered_map<Mode, void(*)()> modes;
+
+    void advance() {
+        for (auto &mode : modes) {
+            if(currentMode == mode.first) {
+                mode.second();
+                return;
+            }
+        }
+    }
+
+}

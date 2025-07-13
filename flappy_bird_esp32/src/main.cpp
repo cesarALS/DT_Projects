@@ -16,10 +16,12 @@ void setup() {
     game::init();
     button::init();
 
+    app::modes.emplace(app::Mode::FlappyBird, game::advance);
+
 }
 
 void loop() {
     button::update();
-    game::advance();
+    app::advance();
 }
 

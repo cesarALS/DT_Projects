@@ -39,3 +39,19 @@ namespace button {
 }
 
 extern TFT_eSPI tft;
+
+namespace app {
+
+    enum class Mode {
+        Init,
+        FlappyBird,
+        Hour,
+        Portrait,
+        Sensor
+    };
+
+    extern Mode currentMode;
+    extern std::unordered_map<Mode, void(*)()> modes;
+
+    void advance();
+}
