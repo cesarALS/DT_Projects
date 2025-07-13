@@ -7,7 +7,7 @@
 
 namespace game {
 
-    constexpr uint8_t FLAP_BUTTON     = 13;
+    constexpr const char* PLAY_BUTTON = button::LEFT_ID;
     constexpr uint8_t RANDOM_SEED_PIN = 36;
 
     constexpr uint8_t COLOR_DEPTH       = 8;

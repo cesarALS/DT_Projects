@@ -13,7 +13,6 @@ namespace game {
         bird::init();
         walls::init();
 
-        pinMode(FLAP_BUTTON, INPUT_PULLUP);
         randomSeed(analogRead(RANDOM_SEED_PIN));
 
         Serial.println("Starting Game");
@@ -140,18 +139,19 @@ namespace game {
             walls::reset();
             bird::reset();
 
-            while (digitalRead(FLAP_BUTTON) == HIGH);
-
-            state::score = 0;
-            canvas::spr.setTextColor(TFT_BLACK,TFT_CYAN);
-            doubleWipe(5, TFT_BLACK);
-            tft.fillScreen(TFT_BLACK);
-            state::current = state::opt::Playing;
+            if (button::list.at(PLAY_BUTTON)->consumeClick()) {
+                state::score = 0;
+                canvas::spr.setTextColor(TFT_BLACK,TFT_CYAN);
+                doubleWipe(5, TFT_BLACK);
+                tft.fillScreen(TFT_BLACK);
+                button::reset();
+                state::current = state::opt::Playing;
+            }
         }
 
         else if (state::current == state::opt::Playing) {
 
-            bird::displace(digitalRead(FLAP_BUTTON) == LOW);
+            bird::displace(button::list.at(PLAY_BUTTON)->consumePress());
 
             canvas::spr.fillSprite(TFT_CYAN);
 
@@ -191,6 +191,7 @@ namespace game {
                 animateTextTopCenter(3, "GAME OVER", TFT_LIGHTGREY);
                 delay(2000);
                 doubleWipe(3, TFT_GREENYELLOW);
+                button::reset();
             }
 
         }
