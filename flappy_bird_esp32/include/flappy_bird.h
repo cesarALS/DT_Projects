@@ -2,7 +2,7 @@
 
 #include "globals.h"
 #include "utils.h"
-#include "Fb2.h"
+#include "images.h"
 #include "math.h"
 
 namespace game {
