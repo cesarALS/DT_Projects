@@ -66,6 +66,12 @@ namespace button {
         list[RIGHT_ID] = new Button(RIGHT);
     }
 
+    void update() {
+        for (auto &btn : list) {
+            btn.second->ob.tick();
+        }
+    }
+
     void reset() {
         for (auto &btn : list) {
             btn.second->reset();

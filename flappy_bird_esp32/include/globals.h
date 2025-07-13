@@ -34,6 +34,7 @@ namespace button {
     extern std::unordered_map<std::string, Button*> list;
 
     void init();
+    void update();
     void reset();
 }
 

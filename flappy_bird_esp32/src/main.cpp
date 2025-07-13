@@ -19,6 +19,7 @@ void setup() {
 }
 
 void loop() {
+    button::update();
     game::advance();
 }
 
