@@ -1,5 +1,6 @@
 #include "globals.h"
 #include "flappy_bird.h"
+#include "menus.h"
 
 void setup() {
 
@@ -13,15 +14,18 @@ void setup() {
     Serial.printf("Space used by the sketch: %u bytes (%.2f KB)\n", sketch_size, sketch_size / 1024.0);
     Serial.printf("Free space: %u bytes (%.2f KB)\n", free_space, free_space / 1024.0);
 
+    globalsInit();
+
     game::init();
     button::init();
 
-    app::modes.emplace(app::Mode::FlappyBird, game::advance);
+    menus::list.emplace(menus::Name::Init, menus::initMenu);
+    menus::list.emplace(menus::Name::FlappyBird, menus::gameMenu);
 
 }
 
 void loop() {
     button::update();
-    app::advance();
+    menus::advance();
 }
 

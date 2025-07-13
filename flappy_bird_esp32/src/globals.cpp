@@ -1,6 +1,17 @@
 #include "globals.h"
 
+#define RANDOM_SEED_PIN 36
+
 TFT_eSPI tft = TFT_eSPI();
+
+void globalsInit() {
+
+    tft.init();
+    tft.setRotation(0);
+    tft.setSwapBytes(true);
+
+    randomSeed(analogRead(RANDOM_SEED_PIN));
+}
 
 namespace button {
 
@@ -77,20 +88,4 @@ namespace button {
             btn.second->reset();
         }
     }
-}
-
-namespace app {
-
-    Mode currentMode = Mode::FlappyBird;
-    std::unordered_map<Mode, void(*)()> modes;
-
-    void advance() {
-        for (auto &mode : modes) {
-            if(currentMode == mode.first) {
-                mode.second();
-                return;
-            }
-        }
-    }
-
 }

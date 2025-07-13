@@ -4,6 +4,9 @@
 #include <unordered_map>
 #include <string>
 
+extern TFT_eSPI tft;
+void globalsInit();
+
 namespace button {
 
     constexpr uint8_t LEFT  = 13;
@@ -36,22 +39,4 @@ namespace button {
     void init();
     void update();
     void reset();
-}
-
-extern TFT_eSPI tft;
-
-namespace app {
-
-    enum class Mode {
-        Init,
-        FlappyBird,
-        Hour,
-        Portrait,
-        Sensor
-    };
-
-    extern Mode currentMode;
-    extern std::unordered_map<Mode, void(*)()> modes;
-
-    void advance();
 }

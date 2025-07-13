@@ -8,7 +8,6 @@
 namespace game {
 
     constexpr const char* PLAY_BUTTON = button::LEFT_ID;
-    constexpr uint8_t RANDOM_SEED_PIN = 36;
 
     void init();
 

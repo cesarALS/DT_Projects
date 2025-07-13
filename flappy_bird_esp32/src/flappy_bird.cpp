@@ -3,19 +3,9 @@
 namespace game {
 
     void init() {
-
-        tft.init();
-        tft.setRotation(0);
-        tft.setSwapBytes(true);
-        tft.fillScreen(TFT_GREENYELLOW);
-
         canvas::init();
         bird::init();
         walls::init();
-
-        randomSeed(analogRead(RANDOM_SEED_PIN));
-
-        Serial.println("Starting Game");
     }
 
     namespace canvas {
