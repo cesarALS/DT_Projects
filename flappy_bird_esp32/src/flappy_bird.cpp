@@ -142,7 +142,7 @@ namespace game {
             if (button::list.at(PLAY_BUTTON)->consumeClick()) {
                 state::score = 0;
                 canvas::spr.setTextColor(TFT_BLACK,TFT_CYAN);
-                doubleWipe(5, TFT_BLACK);
+                screen::doubleWipe(5, TFT_BLACK);
                 tft.fillScreen(TFT_BLACK);
                 button::reset();
                 state::current = state::opt::Playing;
@@ -188,9 +188,9 @@ namespace game {
             canvas::draw();
             if(state::current == state::opt::Menu) {
                 delay(1000);
-                animateTextTopCenter(3, "GAME OVER", TFT_LIGHTGREY);
+                screen::animateTextTopCenter(3, "GAME OVER", TFT_LIGHTGREY);
                 delay(2000);
-                doubleWipe(3, TFT_GREENYELLOW);
+                screen::doubleWipe(3, TFT_GREENYELLOW);
                 button::reset();
             }
 
