@@ -14,20 +14,27 @@ namespace button {
 
     class Button {
         private:
-            OneButton ob;
+            bool press;
+            bool pressAlreadyStarted;
             bool hasClicked;
             uint8_t pin;
 
-            void handle();
-            static void handleWrapper(void* context);
+            void handlePress();
+            void handleClick();
+            static void pressWrapper(void* context);
+            static void clickWrapper(void* context);
         public:
+            OneButton ob;
             Button(uint8_t pin);
-            bool consume();
+            bool consumePress();
+            bool consumeClick();
+            void reset();
     };
 
     extern std::unordered_map<std::string, Button*> list;
 
     void init();
+    void reset();
 }
 
 extern TFT_eSPI tft;
