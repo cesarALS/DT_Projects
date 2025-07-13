@@ -36,7 +36,7 @@ namespace menus {
             firstEntrance = false;
         }
 
-        if(button::list.at(button::LEFT_ID)->consumeClick()) {
+        if(button::list.at(button::RIGHT_ID)->consumeClick()) {
             changeMenu(Name::FlappyBird);
         }
 
