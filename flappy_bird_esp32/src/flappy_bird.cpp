@@ -18,12 +18,6 @@ namespace game {
         Serial.println("Starting Game");
     }
 
-    void initializeSprite(TFT_eSprite& spr, int w, int h, bool swap, uint8_t colorDepth=COLOR_DEPTH) {
-        spr.createSprite(w, h);
-        spr.setColorDepth(colorDepth);
-        spr.setSwapBytes(swap);
-    }
-
     namespace canvas {
         TFT_eSprite spr = TFT_eSprite(&tft);
 
@@ -32,7 +26,7 @@ namespace game {
         }
 
         void init() {
-            initializeSprite(spr, WIDTH, HEIGHT, false);
+            screen::initializeSprite(spr, WIDTH, HEIGHT, false);
         }
     }
 
@@ -57,7 +51,7 @@ namespace game {
 
         void init() {
             for(int wall=0; wall<walls::NUM; wall++) {
-                initializeSprite(spr[wall], WIDTH, canvas::HEIGHT, false);
+                screen::initializeSprite(spr[wall], WIDTH, canvas::HEIGHT, false);
             }
         }
 
@@ -109,7 +103,7 @@ namespace game {
         float velocity = 0;
 
         void init() {
-            initializeSprite(spr, WIDTH, HEIGHT, true, 16);
+            screen::initializeSprite(spr, WIDTH, HEIGHT, true, 16);
         }
 
         void displace(bool pressed) {

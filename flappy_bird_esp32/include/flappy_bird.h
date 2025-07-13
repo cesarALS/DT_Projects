@@ -10,11 +10,7 @@ namespace game {
     constexpr const char* PLAY_BUTTON = button::LEFT_ID;
     constexpr uint8_t RANDOM_SEED_PIN = 36;
 
-    constexpr uint8_t COLOR_DEPTH       = 8;
-
     void init();
-
-    void initializeSprite(TFT_eSprite& spr, int w, int h, bool swap, uint8_t colorDepth);
 
     namespace canvas {
 
