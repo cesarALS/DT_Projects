@@ -38,6 +38,7 @@ namespace game {
 
         void draw();
         void init();
+        void staticRender();
 
     };
 

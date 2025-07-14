@@ -21,6 +21,18 @@ namespace game {
         void init() {
             screen::initializeSprite(spr, WIDTH, HEIGHT, false);
         }
+
+        void staticRender() {
+            canvas::spr.fillSprite(canvas::currentTime->sky);
+
+            canvas::spr.fillSmoothCircle(
+                canvas::spr.width()*0.8,
+                canvas::spr.height()*0.2,
+                canvas::SATELITE_RADIUS,
+                canvas::currentTime->satelite,
+                canvas::currentTime->sky
+            );
+        }
     }
 
     namespace state {
@@ -119,9 +131,13 @@ namespace game {
 
         if (state::current == state::opt::Menu) {
 
-            tft.setTextColor(TFT_BLACK,TFT_GREENYELLOW);
-            tft.drawCentreString("Flappy Bird!", tft.width()/2, 10, 4);
-            tft.drawCentreString("Press Button to Start", tft.width()/2, 50, 2);
+            canvas::staticRender();
+            canvas::spr.setTextColor(canvas::currentTime->text, canvas::currentTime->text);
+            canvas::spr.drawCentreString("Flappy Bird!", canvas::spr.width()*0.3, 20, 4);
+
+            // screen::displayButtonIndications(canvas::spr, "Juega", "Menu");
+
+            canvas::draw();
 
             walls::reset();
             bird::reset();
@@ -141,15 +157,7 @@ namespace game {
 
             bird::displace(button::list.at(PLAY_BUTTON)->consumePress());
 
-            canvas::spr.fillSprite(canvas::currentTime->sky);
-
-            canvas::spr.fillSmoothCircle(
-                canvas::spr.width()*0.8,
-                canvas::spr.height()*0.2,
-                canvas::SATELITE_RADIUS,
-                canvas::currentTime->satelite,
-                canvas::currentTime->sky
-            );
+            canvas::staticRender();
 
             for (int i=0; i<walls::NUM; i++) {
                 walls::drawSprite(i, walls::y[i]);
@@ -186,7 +194,7 @@ namespace game {
                 delay(1000);
                 screen::animateTextTopCenter(3, "GAME OVER", TFT_YELLOW);
                 delay(2000);
-                screen::doubleWipe(3, TFT_GREENYELLOW);
+                screen::doubleWipe(3, canvas::currentTime->sky);
                 button::reset();
             }
 
