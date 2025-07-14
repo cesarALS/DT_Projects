@@ -16,8 +16,7 @@ namespace game {
         constexpr uint8_t HEIGHT   = 236;     // 238+ HEIGHT induces issues
         constexpr uint8_t PADDING  = 1;       // The padding of the game canvas
 
-        constexpr uint8_t SATELITE_HEIGHT = 50;
-        constexpr uint8_t SATELITE_WIDTH = 50;
+        constexpr uint8_t SATELITE_RADIUS = 25;
 
         extern TFT_eSprite spr;
 

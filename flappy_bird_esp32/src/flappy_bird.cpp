@@ -11,7 +11,6 @@ namespace game {
     namespace canvas {
 
         TFT_eSprite spr = TFT_eSprite(&tft);
-        TFT_eSprite satelite = TFT_eSprite(spr);
 
         colorPalette day = {
             0x66ff, TFT_BLACK, 0x6e84, 0xff67
@@ -28,7 +27,6 @@ namespace game {
 
         void init() {
             screen::initializeSprite(spr, WIDTH, HEIGHT, false);
-            screen::initializeSprite(satelite, SATELITE_WIDTH, SATELITE_HEIGHT, false);
         }
     }
 
@@ -152,13 +150,12 @@ namespace game {
 
             canvas::spr.fillSprite(canvas::currentTime->sky);
 
-            canvas::satelite.fillSprite(canvas::currentTime->sky);
-            canvas::satelite.fillSmoothCircle(canvas::satelite.width()/2, canvas::satelite.height()/2, canvas::satelite.width()/2, canvas::currentTime->satelite, canvas::currentTime->sky);
-
-            canvas::satelite.pushToSprite(
-                &canvas::spr,
-                canvas::spr.width()*0.7,
-                canvas::spr.height()*0.1
+            canvas::spr.fillSmoothCircle(
+                canvas::spr.width()*0.8,
+                canvas::spr.height()*0.2,
+                canvas::SATELITE_RADIUS,
+                canvas::currentTime->satelite,
+                canvas::currentTime->sky
             );
 
             for (int i=0; i<walls::NUM; i++) {
