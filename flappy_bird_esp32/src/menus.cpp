@@ -23,11 +23,13 @@ namespace menus {
 
     void initMenu() {
 
+        TFT_eSprite panda = TFT_eSprite(&tft);
+
+
         if (firstEntrance) {
             tft.fillScreen(TFT_WHITE);
             tft.setTextColor(TFT_BLACK);
 
-            TFT_eSprite panda = TFT_eSprite(&tft);
             screen::initializeSprite(panda, PANDA_WIDTH, PANDA_HEIGHT, false, 16);
             panda.fillSprite(TFT_WHITE);
             tft.drawCentreString("Panda Voyager", tft.width()/2, tft.height()*0.1, 4);
@@ -41,6 +43,7 @@ namespace menus {
 
         if(button::list.at(button::RIGHT_ID)->consumeClick()) {
             changeMenu(Name::FlappyBird);
+            panda.deleteSprite();
         }
 
     }
