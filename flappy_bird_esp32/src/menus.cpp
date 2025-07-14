@@ -48,7 +48,8 @@ namespace menus {
     void gameMenu() {
 
         if (firstEntrance) {
-            tft.fillScreen(TFT_GREENYELLOW);
+            tft.fillScreen(TFT_BLACK);
+            game::canvas::changeBgStyle();
             firstEntrance = false;
         }
 

@@ -33,11 +33,18 @@ namespace game {
                 canvas::currentTime->sky
             );
         }
+
+        void changeBgStyle() {
+            canvas::currentTime = (bool)random(0, 2) ? &canvas::day : &canvas::night;
+            canvas::spr.setTextColor(canvas::currentTime->text, canvas::currentTime->text);
+        }
     }
 
     namespace state {
         int current = opt::Menu;
         int score = 0;
+
+        int menuReps = 0;
     }
 
     namespace walls {
@@ -133,9 +140,16 @@ namespace game {
 
             canvas::staticRender();
             canvas::spr.setTextColor(canvas::currentTime->text, canvas::currentTime->text);
-            canvas::spr.drawCentreString("Flappy Bird!", canvas::spr.width()*0.3, 20, 4);
+            canvas::spr.drawCentreString("Juega", canvas::spr.width()*0.4, canvas::spr.height()*0.15, 4);
 
-            // screen::displayButtonIndications(canvas::spr, "Juega", "Menu");
+            bird::spr.fillSprite(TFT_BLACK);
+            bird::spr.pushImage(0,0,bird::spr.width(),bird::spr.height(), (state::menuReps % 20) < 10 ? assets::flappyB : assets::normalB);
+            bird::spr.pushToSprite(
+                &canvas::spr,
+                canvas::spr.width()/2-bird::spr.width()/2,
+                canvas::spr.height()/2-bird::spr.height()/2,
+                TFT_BLACK
+            );
 
             canvas::draw();
 
@@ -143,13 +157,14 @@ namespace game {
             bird::reset();
 
             if (button::list.at(PLAY_BUTTON)->consumeClick()) {
-                canvas::currentTime = (bool)random(0, 2) ? &canvas::day : &canvas::night;
                 state::score = 0;
-                canvas::spr.setTextColor(canvas::currentTime->text, canvas::currentTime->text);
                 screen::doubleWipe(5, TFT_BLACK);
-                tft.fillScreen(TFT_BLACK);
                 button::reset();
+                state::menuReps = 0;
+                canvas::changeBgStyle();
                 state::current = state::opt::Playing;
+            } else {
+                state::menuReps++;
             }
         }
 
