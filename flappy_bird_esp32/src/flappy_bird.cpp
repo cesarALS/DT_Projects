@@ -44,6 +44,7 @@ namespace game {
     namespace state {
         int current = opt::Menu;
         int score = 0;
+        int highScore = 0;
 
         int menuReps = 0;
     }
@@ -146,16 +147,49 @@ namespace game {
         if (state::current == state::opt::Menu) {
 
             canvas::staticRender();
-            canvas::spr.setTextColor(canvas::currentTime->text, canvas::currentTime->text);
-            canvas::spr.drawCentreString("", canvas::spr.width()*0.4, canvas::spr.height()*0.15, 4);
+            canvas::spr.setTextColor(TFT_BLACK, TFT_BLACK);
 
-            bird::draw(
-                state::menuReps % 20 < 10,
-                canvas::spr.width()/2-bird::spr.width()/2,
-                canvas::spr.height()/2-bird::spr.height()/2
+            constexpr float base = 0.45;
+            constexpr float step = 0.15;
+
+            canvas::spr.fillRect(
+                canvas::spr.width()*0.4,
+                canvas::spr.height()*base,
+                canvas::spr.width()*0.6,
+                canvas::spr.height()*0.35,
+                TFT_WHITE
+            );
+
+            canvas::spr.drawCentreString(
+                "Record: " + String(state::highScore),
+                canvas::spr.width()*0.7,
+                canvas::spr.height()*(base+0.05),
+                4
+            );
+
+            canvas::spr.drawCentreString(
+                "Ultimo: " + String(state::score),
+                canvas::spr.width()*0.7,
+                canvas::spr.height()*(base+0.2),
+                4
             );
 
             screen::displayButtonIndications(canvas::spr, "Juega", "Menu");
+
+            canvas::spr.setTextColor(canvas::currentTime->text, canvas::currentTime->text);
+
+            canvas::spr.drawCentreString(
+                "JUEGO",
+                canvas::spr.width()*0.35,
+                canvas::spr.height()*0.15,
+                4
+            );
+
+            bird::draw(
+                state::menuReps % 20 < 10,
+                canvas::spr.width()*0.1,
+                canvas::spr.height()/2-bird::spr.height()*0.25
+            );
 
             canvas::draw();
 
@@ -210,6 +244,7 @@ namespace game {
 
             canvas::draw();
             if(state::current == state::opt::Menu) {
+                state::highScore = max(state::score, state::highScore);
                 delay(1000);
                 screen::animateTextTopCenter(3, "GAME OVER", TFT_YELLOW);
                 delay(2000);

@@ -50,6 +50,7 @@ namespace game {
         };
         extern int current;
         extern int score;
+        extern int highScore;
         extern int menuReps;
     }
 
