@@ -11,12 +11,13 @@ namespace game {
     namespace canvas {
 
         TFT_eSprite spr = TFT_eSprite(&tft);
+        TFT_eSprite satelite = TFT_eSprite(spr);
 
         colorPalette day = {
-            0x66ff, TFT_BLACK, 0x6e84
+            0x66ff, TFT_BLACK, 0x6e84, 0xff67
         };
         colorPalette night = {
-            0x196b, TFT_WHITE, 0x5da2
+            0x196b, TFT_WHITE, 0x5da2, 0xffff
         };
 
         colorPalette* currentTime = &day;
@@ -27,6 +28,7 @@ namespace game {
 
         void init() {
             screen::initializeSprite(spr, WIDTH, HEIGHT, false);
+            screen::initializeSprite(satelite, SATELITE_WIDTH, SATELITE_HEIGHT, false);
         }
     }
 
@@ -56,7 +58,7 @@ namespace game {
         }
 
         void drawSprite(uint8_t wall ,int gap_y) {
-            spr[wall].fillSprite(canvas::currentTime->sky);
+            spr[wall].fillSprite(TFT_BLACK);
             spr[wall].fillRect(0, 0, WIDTH, gap_y, canvas::currentTime->wall);
             spr[wall].fillRect(0, gap_y + GAP, WIDTH, canvas::HEIGHT - (gap_y + GAP), canvas::currentTime->wall);
         }
@@ -150,9 +152,18 @@ namespace game {
 
             canvas::spr.fillSprite(canvas::currentTime->sky);
 
+            canvas::satelite.fillSprite(canvas::currentTime->sky);
+            canvas::satelite.fillSmoothCircle(canvas::satelite.width()/2, canvas::satelite.height()/2, canvas::satelite.width()/2, canvas::currentTime->satelite, canvas::currentTime->sky);
+
+            canvas::satelite.pushToSprite(
+                &canvas::spr,
+                canvas::spr.width()*0.7,
+                canvas::spr.height()*0.1
+            );
+
             for (int i=0; i<walls::NUM; i++) {
                 walls::drawSprite(i, walls::y[i]);
-                walls::spr[i].pushToSprite(&canvas::spr, walls::x[i], 0, TFT_CYAN);
+                walls::spr[i].pushToSprite(&canvas::spr, walls::x[i], 0, TFT_BLACK);
 
                 if (walls::x[i] < 0) walls::computeNew(i, canvas::WIDTH);
 
