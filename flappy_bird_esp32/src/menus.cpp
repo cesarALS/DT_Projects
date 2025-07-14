@@ -36,7 +36,7 @@ namespace menus {
             panda.pushImage(0, 0, PANDA_WIDTH, PANDA_HEIGHT, Panda);
             panda.pushSprite(tft.width()/2-panda.width()/2, tft.height()/2-panda.height()/2);
 
-            std::array<TFT_eSprite*, 2> buttonsPair = screen::displayButtonIndications(tft, "Game", "Menu");
+            screen::displayButtonIndications(tft, "Hora", "Juego");
 
             firstEntrance = false;
         }

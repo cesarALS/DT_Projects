@@ -147,13 +147,15 @@ namespace game {
 
             canvas::staticRender();
             canvas::spr.setTextColor(canvas::currentTime->text, canvas::currentTime->text);
-            canvas::spr.drawCentreString("Juega", canvas::spr.width()*0.4, canvas::spr.height()*0.15, 4);
+            canvas::spr.drawCentreString("", canvas::spr.width()*0.4, canvas::spr.height()*0.15, 4);
 
             bird::draw(
                 state::menuReps % 20 < 10,
                 canvas::spr.width()/2-bird::spr.width()/2,
                 canvas::spr.height()/2-bird::spr.height()/2
             );
+
+            screen::displayButtonIndications(canvas::spr, "Juega", "Menu");
 
             canvas::draw();
 
