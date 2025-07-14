@@ -189,7 +189,7 @@ namespace game {
 
             bird::spr.fillSprite(TFT_BLACK);
             bird::spr.pushImage(0,0,bird::WIDTH,bird::HEIGHT,bird::velocity<0 ? assets::flappyB : assets::normalB);
-            bird::spr.pushToSprite(&canvas::spr,40,bird::y,TFT_BLACK);
+            bird::spr.pushToSprite(&canvas::spr,bird::X,bird::y,TFT_BLACK);
 
             canvas::draw();
             if(state::current == state::opt::Menu) {
