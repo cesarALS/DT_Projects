@@ -41,6 +41,7 @@ namespace game {
         void staticRender();
         void changeBgStyle();
         void gameMenuDisplay();
+        void destroySprites();
 
     };
 

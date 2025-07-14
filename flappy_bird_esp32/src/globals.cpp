@@ -11,6 +11,8 @@ void globalsInit() {
     tft.setSwapBytes(true);
 
     randomSeed(analogRead(RANDOM_SEED_PIN));
+
+    button::init();
 }
 
 namespace button {

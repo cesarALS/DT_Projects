@@ -7,6 +7,8 @@ namespace game {
         canvas::init();
         bird::init();
         walls::init();
+        game::canvas::changeBgStyle();
+
     }
 
     namespace canvas {
@@ -89,6 +91,14 @@ namespace game {
 
             state::menuReps++;
 
+        }
+
+        void destroySprites() {
+            spr.deleteSprite();
+            bird::spr.deleteSprite();
+            for (auto &spr : walls::spr) {
+                spr.deleteSprite();
+            }
         }
     }
 

@@ -56,7 +56,7 @@ namespace menus {
 
         if (firstEntrance) {
             tft.fillScreen(TFT_BLACK);
-            game::canvas::changeBgStyle();
+            game::init();
             firstEntrance = false;
         }
 
@@ -72,6 +72,7 @@ namespace menus {
 
             else if (button::list.at(button::RIGHT_ID)->consumeClick()) {
                 game::state::reset();
+                game::canvas::destroySprites();
                 changeMenu(Name::Init, TFT_WHITE);
             }
         }
