@@ -47,7 +47,7 @@ namespace screen {
 
     void initializeSprite(TFT_eSprite& spr, int w, int h, bool swap, uint8_t colorDepth=COLOR_DEPTH);
 
-    void displayButtonIndications(TFT_eSPI& spr, const char* leftText="", const char* rightText="");
+    void displayButtonIndications(TFT_eSPI& spr, const char* leftText="", const char* rightText="", int color=TFT_BLACK);
     void wipe(int speed, int color);
     void doubleWipe(int speed, int color);
     void animateTextTopCenter(int speed, const char* text, int color);

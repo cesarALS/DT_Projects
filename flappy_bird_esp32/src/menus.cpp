@@ -16,15 +16,15 @@ namespace menus {
         }
     }
 
-    void changeMenu(Name mode) {
+    void changeMenu(Name mode, int color) {
         currentMode = mode;
+        screen::doubleWipe(5, color);
         firstEntrance = true;
     }
 
     void initMenu() {
 
         TFT_eSprite panda = TFT_eSprite(&tft);
-
 
         if (firstEntrance) {
             tft.fillScreen(TFT_WHITE);
@@ -42,8 +42,12 @@ namespace menus {
         }
 
         if(button::list.at(button::RIGHT_ID)->consumeClick()) {
-            changeMenu(Name::FlappyBird);
             panda.deleteSprite();
+            changeMenu(Name::FlappyBird);
+        }
+        else if (button::list.at(button::LEFT_ID)->consumeClick()) {
+            panda.deleteSprite();
+            changeMenu(Name::Hour);
         }
 
     }
@@ -57,6 +61,25 @@ namespace menus {
         }
 
         game::advance();
+    }
+
+    void hourMenu() {
+        if (firstEntrance) {
+            tft.fillScreen(0x196b);
+            screen::displayButtonIndications(tft, "", "Menu");
+
+            tft.setTextColor(TFT_WHITE, TFT_WHITE);
+            tft.drawCentreString("Hora Colombia", tft.width()*0.5, 20, 4);
+
+            tft.drawCentreString("15:02:30", tft.width()*0.475, tft.height()*0.3, 7);
+            tft.drawCentreString("Lunes 24 Julio", tft.width()*0.5, tft.height()*0.6, 4);
+
+            firstEntrance = false;
+        }
+
+        if (button::list.at(button::RIGHT_ID)->consumeClick()) {
+            changeMenu(Name::Init);
+        }
     }
 
 

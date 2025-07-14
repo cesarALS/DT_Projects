@@ -21,6 +21,7 @@ void setup() {
 
     menus::list.emplace(menus::Name::Init, menus::initMenu);
     menus::list.emplace(menus::Name::FlappyBird, menus::gameMenu);
+    menus::list.emplace(menus::Name::Hour, menus::hourMenu);
 
 }
 

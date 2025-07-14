@@ -98,7 +98,9 @@ namespace screen {
         spr.setSwapBytes(swap);
     }
 
-    void displayButtonIndications(TFT_eSPI& spr, const char* leftText, const char* rightText) {
+    void displayButtonIndications(TFT_eSPI& spr, const char* leftText, const char* rightText, int color) {
+
+        spr.setTextColor(TFT_BLACK, TFT_BLACK);
 
         spr.fillRect(0, spr.height()*0.8, spr.width(), spr.height()*0.2, TFT_LIGHTGREY);
 
