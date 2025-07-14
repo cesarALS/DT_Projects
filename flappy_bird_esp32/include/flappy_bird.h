@@ -54,6 +54,7 @@ namespace game {
         extern int score;
         extern int highScore;
         extern int menuReps;
+        extern bool scoreHasChanged;
         void reset();
         void advanceGame();
     }
@@ -73,7 +74,7 @@ namespace game {
 
         constexpr uint8_t NEW_WALL_DIFFERENTIAL = 110; // The maximum difference of between concurrent walls
 
-        constexpr uint8_t DISPLACEMENT      = 3;
+        extern uint8_t displacement;
 
         extern int x[NUM];
         extern int y[NUM];

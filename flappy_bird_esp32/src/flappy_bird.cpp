@@ -106,6 +106,7 @@ namespace game {
         int current = opt::Menu;
         int score = 0;
         int highScore = 0;
+        bool scoreHasChanged = false;
 
         int menuReps = 0;
         void reset() {
@@ -114,6 +115,7 @@ namespace game {
             button::reset();
             score = 0;
             state::menuReps = 0;
+            walls::displacement = 3;
             canvas::changeBgStyle();
         }
 
@@ -131,6 +133,7 @@ namespace game {
                 if(i == walls::closestToBird) {
                     if (walls::x[i] <= bird::X) {
                         score++;
+                        scoreHasChanged = true;
                         walls::closestToBird = (walls::closestToBird + 1) % walls::NUM;
                     }
 
@@ -143,7 +146,7 @@ namespace game {
                     }
 
                 }
-                walls::x[i] -= walls::DISPLACEMENT;
+                walls::x[i] -= walls::displacement;
             }
 
             canvas::spr.drawCentreString(String(score),tft.width()/2,10,4);
@@ -151,6 +154,12 @@ namespace game {
             bird::draw(bird::velocity<0, bird::X, bird::y);
 
             canvas::draw();
+
+            if(score>0 && scoreHasChanged && score%10==0) {
+                walls::displacement++;
+            }
+
+            if(scoreHasChanged) scoreHasChanged = false;
 
             if(current == opt::Menu) {
                 highScore = max(score, highScore);
@@ -173,6 +182,8 @@ namespace game {
 
         int x[NUM] = {0};
         int y[NUM] = {0};
+
+        uint8_t displacement = 3;
 
         int lastHeight = canvas::HEIGHT/2;
         uint8_t closestToBird = 0;
