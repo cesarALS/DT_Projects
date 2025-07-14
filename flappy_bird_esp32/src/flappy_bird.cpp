@@ -138,7 +138,7 @@ namespace game {
             if (button::list.at(PLAY_BUTTON)->consumeClick()) {
                 canvas::currentTime = (bool)random(0, 2) ? &canvas::day : &canvas::night;
                 state::score = 0;
-                canvas::spr.setTextColor(canvas::currentTime->text, canvas::currentTime->sky);
+                canvas::spr.setTextColor(canvas::currentTime->text, canvas::currentTime->text);
                 screen::doubleWipe(5, TFT_BLACK);
                 tft.fillScreen(TFT_BLACK);
                 button::reset();
