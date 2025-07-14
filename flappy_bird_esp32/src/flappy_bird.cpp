@@ -12,14 +12,7 @@ namespace game {
 
         TFT_eSprite spr = TFT_eSprite(&tft);
 
-        colorPalette day = {
-            0x66ff, TFT_BLACK, 0x6e84, 0xff67
-        };
-        colorPalette night = {
-            0x196b, TFT_WHITE, 0x5da2, 0xffff
-        };
-
-        colorPalette* currentTime = &day;
+        const colorPalette* currentTime = &day;
 
         void draw(){
             spr.pushSprite(PADDING, PADDING);

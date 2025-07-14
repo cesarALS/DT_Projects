@@ -27,10 +27,14 @@ namespace game {
             int satelite;
         };
 
-        extern colorPalette day;
-        extern colorPalette night;
+        const colorPalette day = {
+            0x66ff, TFT_BLACK, 0x6e84, 0xff67
+        };
+        const colorPalette night = {
+            0x196b, TFT_WHITE, 0x5da2, 0xffff
+        };
 
-        extern colorPalette* currentTime;
+        extern const colorPalette* currentTime;
 
         void draw();
         void init();
