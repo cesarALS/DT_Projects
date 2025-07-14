@@ -1,4 +1,5 @@
 #include "flappy_bird.h"
+#include <pgmspace.h>
 
 namespace game {
 
@@ -132,6 +133,12 @@ namespace game {
             velocity = 0;
         }
 
+        void draw(bool flappy, int x, int y) {
+            spr.fillSprite(TFT_BLACK);
+            spr.pushImage(0,0,spr.width(),spr.height(), flappy ? assets::flappyB : assets::normalB);
+            spr.pushToSprite(&canvas::spr,x,y,TFT_BLACK);
+        }
+
     }
 
     void advance() {
@@ -142,13 +149,10 @@ namespace game {
             canvas::spr.setTextColor(canvas::currentTime->text, canvas::currentTime->text);
             canvas::spr.drawCentreString("Juega", canvas::spr.width()*0.4, canvas::spr.height()*0.15, 4);
 
-            bird::spr.fillSprite(TFT_BLACK);
-            bird::spr.pushImage(0,0,bird::spr.width(),bird::spr.height(), (state::menuReps % 20) < 10 ? assets::flappyB : assets::normalB);
-            bird::spr.pushToSprite(
-                &canvas::spr,
+            bird::draw(
+                state::menuReps % 20 < 10,
                 canvas::spr.width()/2-bird::spr.width()/2,
-                canvas::spr.height()/2-bird::spr.height()/2,
-                TFT_BLACK
+                canvas::spr.height()/2-bird::spr.height()/2
             );
 
             canvas::draw();
@@ -200,9 +204,7 @@ namespace game {
 
             canvas::spr.drawCentreString(String(state::score),tft.width()/2,10,4);
 
-            bird::spr.fillSprite(TFT_BLACK);
-            bird::spr.pushImage(0,0,bird::WIDTH,bird::HEIGHT,bird::velocity<0 ? assets::flappyB : assets::normalB);
-            bird::spr.pushToSprite(&canvas::spr,bird::X,bird::y,TFT_BLACK);
+            bird::draw(bird::velocity<0, bird::X, bird::y);
 
             canvas::draw();
             if(state::current == state::opt::Menu) {

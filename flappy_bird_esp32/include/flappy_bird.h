@@ -102,6 +102,7 @@ namespace game {
         void init();
         void displace(bool pressed);
         void reset();
+        void draw(bool flappy, int x, int y);
 
     };
 
