@@ -3,6 +3,7 @@
 #include "OneButton.h"
 #include <unordered_map>
 #include <string>
+#include <array>
 
 extern TFT_eSPI tft;
 void globalsInit();
@@ -39,4 +40,16 @@ namespace button {
     void init();
     void update();
     void reset();
+}
+
+namespace screen {
+
+    constexpr uint8_t COLOR_DEPTH       = 8;
+
+    void initializeSprite(TFT_eSprite& spr, int w, int h, bool swap, uint8_t colorDepth=COLOR_DEPTH);
+
+    std::array<TFT_eSprite*, 2> displayButtonIndications(TFT_eSPI& spr, const char* leftText="", const char* rightText="");
+    void wipe(int speed, int color);
+    void doubleWipe(int speed, int color);
+    void animateTextTopCenter(int speed, const char* text, int color);
 }

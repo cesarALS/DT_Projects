@@ -1,7 +1,6 @@
 #pragma once
 
 #include "globals.h"
-#include "utils.h"
 #include "images.h"
 #include "math.h"
 
