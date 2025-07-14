@@ -1,7 +1,6 @@
 #pragma once
 
 #include "globals.h"
-#include "utils.h"
 #include "images.h"
 #include "math.h"
 
@@ -17,10 +16,32 @@ namespace game {
         constexpr uint8_t HEIGHT   = 236;     // 238+ HEIGHT induces issues
         constexpr uint8_t PADDING  = 1;       // The padding of the game canvas
 
+        constexpr uint8_t SATELITE_RADIUS = 25;
+
         extern TFT_eSprite spr;
+
+        struct colorPalette {
+            int sky;
+            int text;
+            int wall;
+            int satelite;
+        };
+
+        const colorPalette day = {
+            0x66ff, TFT_BLACK, 0x6e84, 0xff67
+        };
+        const colorPalette night = {
+            0x196b, TFT_WHITE, 0x5da2, 0xffff
+        };
+
+        extern const colorPalette* currentTime;
 
         void draw();
         void init();
+        void staticRender();
+        void changeBgStyle();
+        void gameMenuDisplay();
+        void destroySprites();
 
     };
 
@@ -31,6 +52,11 @@ namespace game {
         };
         extern int current;
         extern int score;
+        extern int highScore;
+        extern int menuReps;
+        extern bool scoreHasChanged;
+        void reset();
+        void advanceGame();
     }
 
     namespace walls {
@@ -48,7 +74,7 @@ namespace game {
 
         constexpr uint8_t NEW_WALL_DIFFERENTIAL = 110; // The maximum difference of between concurrent walls
 
-        constexpr uint8_t DISPLACEMENT      = 3;
+        extern uint8_t displacement;
 
         extern int x[NUM];
         extern int y[NUM];
@@ -82,9 +108,8 @@ namespace game {
         void init();
         void displace(bool pressed);
         void reset();
+        void draw(bool flappy, int x, int y);
 
     };
-
-    void advance();
 
 };

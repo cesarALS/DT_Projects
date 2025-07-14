@@ -11,6 +11,8 @@ void globalsInit() {
     tft.setSwapBytes(true);
 
     randomSeed(analogRead(RANDOM_SEED_PIN));
+
+    button::init();
 }
 
 namespace button {
@@ -87,5 +89,46 @@ namespace button {
         for (auto &btn : list) {
             btn.second->reset();
         }
+    }
+}
+
+namespace screen {
+
+    void initializeSprite(TFT_eSprite& spr, int w, int h, bool swap, uint8_t colorDepth) {
+        spr.createSprite(w, h);
+        spr.setColorDepth(colorDepth);
+        spr.setSwapBytes(swap);
+    }
+
+    void displayButtonIndications(TFT_eSPI& spr, const char* leftText, const char* rightText, int color) {
+
+        spr.setTextColor(TFT_BLACK, TFT_BLACK);
+
+        spr.fillRect(0, spr.height()*0.8, spr.width(), spr.height()*0.2, TFT_LIGHTGREY);
+
+        if (leftText != "") spr.drawCentreString(leftText, spr.width()*0.25, spr.height()*0.85, 4);
+        if (rightText != "") spr.drawCentreString(rightText, spr.width()*0.75, spr.height()*0.85, 4);
+
+        spr.drawLine(spr.width()/2, spr.height()*0.8, spr.width()/2, spr.height(), TFT_PURPLE);
+
+    }
+
+    void wipe(int speed, int color) {
+        for (int i = 0; i < tft.height(); i += speed) {
+            tft.fillRect(0, 0, tft.width(), i, color);
+        }
+    }
+
+    void doubleWipe(int speed, int color) {
+        for (int i = 0; i < tft.height()/2+speed; i += speed) {
+            tft.fillRect(0, 0, tft.width(), i, color);
+            tft.fillRect(0, tft.height()-i, tft.width(), tft.height()-i, color);
+        }
+    }
+
+    void animateTextTopCenter(int speed, const char* text, int color) {
+        doubleWipe(speed, color);
+        tft.setTextColor(TFT_BLACK);
+        tft.drawCentreString(text, tft.width()/2, tft.height()/2-10, 4);
     }
 }

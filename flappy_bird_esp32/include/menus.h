@@ -1,7 +1,6 @@
 #pragma once
 
 #include "globals.h"
-#include "utils.h"
 
 namespace menus {
 
@@ -18,10 +17,11 @@ namespace menus {
     extern bool firstEntrance;
 
     void advance();
-    void changeMenu(Name mode);
+    void changeMenu(Name mode, int color = TFT_BLACK);
 
     void initMenu();
     void mainMenu();
     void gameMenu();
+    void hourMenu();
 
 }
