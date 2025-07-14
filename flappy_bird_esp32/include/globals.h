@@ -10,8 +10,8 @@ void globalsInit();
 
 namespace button {
 
-    constexpr uint8_t LEFT  = 13;
-    constexpr uint8_t RIGHT = 14;
+    constexpr uint8_t LEFT  = 32;
+    constexpr uint8_t RIGHT = 33;
 
     constexpr const char* LEFT_ID = "left";
     constexpr const char* RIGHT_ID = "right";
