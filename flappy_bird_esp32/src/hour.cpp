@@ -2,6 +2,8 @@
 
 namespace hour {
 
+  bool connectedToWifi = false;
+
   void init() {
 
     setlocale(LC_ALL, "es_ES.UTF-8");
@@ -33,12 +35,6 @@ namespace hour {
     }
     Serial.printf("Connected to %s\n", SSID);
     connectedToWifi = true;
-  }
-
-  void isWifiWorking () {
-    if(WiFi.status() == WL_CONNECTED) connectionWorking = true;
-    Serial.printf("Connection to %s is not working\n", SSID);
-    connectionWorking = false;
   }
 
 }
