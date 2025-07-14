@@ -39,6 +39,57 @@ namespace game {
             canvas::currentTime = (bool)random(0, 2) ? &canvas::day : &canvas::night;
             canvas::spr.setTextColor(canvas::currentTime->text, canvas::currentTime->text);
         }
+
+        void gameMenuDisplay() {
+            staticRender();
+            spr.setTextColor(TFT_BLACK, TFT_BLACK);
+
+            constexpr float base = 0.45;
+
+            spr.fillRect(
+                spr.width()*0.4,
+                spr.height()*base,
+                spr.width()*0.6,
+                spr.height()*0.35,
+                TFT_WHITE
+            );
+
+            spr.drawCentreString(
+                "Record: " + String(state::highScore),
+                spr.width()*0.7,
+                spr.height()*(base+0.05),
+                4
+            );
+
+            spr.drawCentreString(
+                "Ultimo: " + String(state::score),
+                spr.width()*0.7,
+                spr.height()*(base+0.2),
+                4
+            );
+
+            screen::displayButtonIndications(spr, "Juega", "Menu");
+
+            spr.setTextColor(currentTime->text, currentTime->text);
+
+            spr.drawCentreString(
+                "JUEGO",
+                spr.width()*0.35,
+                spr.height()*0.15,
+                4
+            );
+
+            bird::draw(
+                state::menuReps % 20 < 10,
+                spr.width()*0.1,
+                spr.height()/2-bird::spr.height()*0.25
+            );
+
+            draw();
+
+            state::menuReps++;
+
+        }
     }
 
     namespace state {
@@ -47,6 +98,59 @@ namespace game {
         int highScore = 0;
 
         int menuReps = 0;
+        void reset() {
+            walls::reset();
+            bird::reset();
+            button::reset();
+            score = 0;
+            state::menuReps = 0;
+            canvas::changeBgStyle();
+        }
+
+        void advanceGame() {
+            bird::displace(button::list.at(PLAY_BUTTON)->consumePress());
+
+            canvas::staticRender();
+
+            for (int i=0; i<walls::NUM; i++) {
+                walls::drawSprite(i, walls::y[i]);
+                walls::spr[i].pushToSprite(&canvas::spr, walls::x[i], 0, TFT_BLACK);
+
+                if (walls::x[i] < 0) walls::computeNew(i, canvas::WIDTH);
+
+                if(i == walls::closestToBird) {
+                    if (walls::x[i] <= bird::X) {
+                        score++;
+                        walls::closestToBird = (walls::closestToBird + 1) % walls::NUM;
+                    }
+
+                    if (
+                        (bird::X + bird::WIDTH > walls::x[i] && bird::X < walls::x[i] + walls::WIDTH) // level with wall
+                        &&
+                        (bird::y < walls::y[i] || bird::y + bird::HEIGHT > walls::y[i] + walls::GAP) // not level with the gap
+                    ) {
+                        state::current = state::opt::Menu;
+                    }
+
+                }
+                walls::x[i] -= walls::DISPLACEMENT;
+            }
+
+            canvas::spr.drawCentreString(String(score),tft.width()/2,10,4);
+
+            bird::draw(bird::velocity<0, bird::X, bird::y);
+
+            canvas::draw();
+
+            if(current == opt::Menu) {
+                highScore = max(score, highScore);
+                delay(1000);
+                screen::animateTextTopCenter(3, "GAME OVER", TFT_YELLOW);
+                delay(2000);
+                screen::doubleWipe(3, canvas::currentTime->sky);
+                button::reset();
+            }
+        }
     }
 
     namespace walls {
@@ -140,118 +244,5 @@ namespace game {
             spr.pushToSprite(&canvas::spr,x,y,TFT_BLACK);
         }
 
-    }
-
-    void advance() {
-
-        if (state::current == state::opt::Menu) {
-
-            canvas::staticRender();
-            canvas::spr.setTextColor(TFT_BLACK, TFT_BLACK);
-
-            constexpr float base = 0.45;
-            constexpr float step = 0.15;
-
-            canvas::spr.fillRect(
-                canvas::spr.width()*0.4,
-                canvas::spr.height()*base,
-                canvas::spr.width()*0.6,
-                canvas::spr.height()*0.35,
-                TFT_WHITE
-            );
-
-            canvas::spr.drawCentreString(
-                "Record: " + String(state::highScore),
-                canvas::spr.width()*0.7,
-                canvas::spr.height()*(base+0.05),
-                4
-            );
-
-            canvas::spr.drawCentreString(
-                "Ultimo: " + String(state::score),
-                canvas::spr.width()*0.7,
-                canvas::spr.height()*(base+0.2),
-                4
-            );
-
-            screen::displayButtonIndications(canvas::spr, "Juega", "Menu");
-
-            canvas::spr.setTextColor(canvas::currentTime->text, canvas::currentTime->text);
-
-            canvas::spr.drawCentreString(
-                "JUEGO",
-                canvas::spr.width()*0.35,
-                canvas::spr.height()*0.15,
-                4
-            );
-
-            bird::draw(
-                state::menuReps % 20 < 10,
-                canvas::spr.width()*0.1,
-                canvas::spr.height()/2-bird::spr.height()*0.25
-            );
-
-            canvas::draw();
-
-            walls::reset();
-            bird::reset();
-
-            if (button::list.at(PLAY_BUTTON)->consumeClick()) {
-                state::score = 0;
-                screen::doubleWipe(5, TFT_BLACK);
-                button::reset();
-                state::menuReps = 0;
-                canvas::changeBgStyle();
-                state::current = state::opt::Playing;
-            } else {
-                state::menuReps++;
-            }
-        }
-
-        else if (state::current == state::opt::Playing) {
-
-            bird::displace(button::list.at(PLAY_BUTTON)->consumePress());
-
-            canvas::staticRender();
-
-            for (int i=0; i<walls::NUM; i++) {
-                walls::drawSprite(i, walls::y[i]);
-                walls::spr[i].pushToSprite(&canvas::spr, walls::x[i], 0, TFT_BLACK);
-
-                if (walls::x[i] < 0) walls::computeNew(i, canvas::WIDTH);
-
-                if(i == walls::closestToBird) {
-                    if (walls::x[i] <= bird::X) {
-                        state::score++;
-                        walls::closestToBird = (walls::closestToBird + 1) % walls::NUM;
-                    }
-
-                    if (
-                        (bird::X + bird::WIDTH > walls::x[i] && bird::X < walls::x[i] + walls::WIDTH) // level with wall
-                        &&
-                        (bird::y < walls::y[i] || bird::y + bird::HEIGHT > walls::y[i] + walls::GAP) // not level with the gap
-                    ) {
-                        state::current = state::opt::Menu;
-                    }
-
-                }
-                walls::x[i] -= walls::DISPLACEMENT;
-            }
-
-            canvas::spr.drawCentreString(String(state::score),tft.width()/2,10,4);
-
-            bird::draw(bird::velocity<0, bird::X, bird::y);
-
-            canvas::draw();
-            if(state::current == state::opt::Menu) {
-                state::highScore = max(state::score, state::highScore);
-                delay(1000);
-                screen::animateTextTopCenter(3, "GAME OVER", TFT_YELLOW);
-                delay(2000);
-                screen::doubleWipe(3, canvas::currentTime->sky);
-                button::reset();
-            }
-
-        }
     }
 };

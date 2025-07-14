@@ -40,6 +40,7 @@ namespace game {
         void init();
         void staticRender();
         void changeBgStyle();
+        void gameMenuDisplay();
 
     };
 
@@ -52,6 +53,8 @@ namespace game {
         extern int score;
         extern int highScore;
         extern int menuReps;
+        void reset();
+        void advanceGame();
     }
 
     namespace walls {
@@ -106,7 +109,5 @@ namespace game {
         void draw(bool flappy, int x, int y);
 
     };
-
-    void advance();
 
 };

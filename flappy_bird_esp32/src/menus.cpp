@@ -60,7 +60,34 @@ namespace menus {
             firstEntrance = false;
         }
 
-        game::advance();
+        if (game::state::current == game::state::opt::Menu) {
+
+            game::canvas::gameMenuDisplay();
+
+            if (button::list.at(game::PLAY_BUTTON)->consumeClick()) {
+                game::state::reset();
+                screen::doubleWipe(5, TFT_BLACK);
+                game::state::current = game::state::opt::Playing;
+            }
+
+            else if (button::list.at(button::RIGHT_ID)->consumeClick()) {
+                game::state::reset();
+                changeMenu(Name::Init, TFT_WHITE);
+            }
+        }
+
+        else if (game::state::current == game::state::opt::Playing) {
+
+            game::state::advanceGame();
+
+            if (button::list.at(button::RIGHT_ID)->consumeClick()) {
+                game::state::current = game::state::Menu;
+                screen::wipe(10, TFT_BLACK);
+                button::reset();
+            }
+
+        }
+
     }
 
     void hourMenu() {
