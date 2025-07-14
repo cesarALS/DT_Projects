@@ -188,7 +188,7 @@ namespace game {
             canvas::spr.drawCentreString(String(state::score),tft.width()/2,10,4);
 
             bird::spr.fillSprite(TFT_BLACK);
-            bird::spr.pushImage(0,0,bird::WIDTH,bird::HEIGHT,fb2);
+            bird::spr.pushImage(0,0,bird::WIDTH,bird::HEIGHT,bird::velocity<0 ? assets::flappyB : assets::normalB);
             bird::spr.pushToSprite(&canvas::spr,40,bird::y,TFT_BLACK);
 
             canvas::draw();
