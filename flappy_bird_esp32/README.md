@@ -53,9 +53,9 @@ This will, of course, adjust the pins. You should also physically adjust your ST
 > [!NOTE]
 > Because of the library's great portability, you can run the same code in various chips, and various LCD TFT screens. You should look into them to port this code to those platforms, by changing tft_eSPI files and maybe some of the source code, like canvas sizes.
 
-### The button
+### Buttons
 
-Finally, wire a simple button to the 13 pin of the ESP32, and wire it to ground also. You will play with it.
+Finally, wire a simple button to the 32 pin of the ESP32, and another button to the 33 pin of the ESP32. Wire them both to ground also. The button connected to 32 is considered the left button, and the button connected to 33 is considered the right one.
 
 ## Wokwi simulation
 
