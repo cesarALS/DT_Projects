@@ -18,6 +18,7 @@ namespace menus {
     extern std::unordered_map<Name, void(*)()> list;
     extern bool firstEntrance;
 
+    void init();
     void advance();
 
     namespace InitMenu{

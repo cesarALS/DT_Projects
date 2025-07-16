@@ -7,6 +7,14 @@ namespace menus {
     std::unordered_map<Name, void(*)()> list;
     bool firstEntrance = true;
 
+    void init() {
+        menus::list.emplace(menus::Name::Init, menus::InitMenu::menu);
+        menus::list.emplace(menus::Name::MainMenu, menus::MainMenu::menu);
+        menus::list.emplace(menus::Name::FlappyBird, menus::gameMenu);
+        menus::list.emplace(menus::Name::Hour, menus::hourMenu);
+        menus::list.emplace(menus::Name::Portrait, menus::portraitMenu);
+    }
+
     void advance() {
         for (auto &mode : list) {
             if(currentMode == mode.first) {
