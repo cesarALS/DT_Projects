@@ -10,6 +10,9 @@ namespace assets {
     extern const unsigned short flappyB[0x340] PROGMEM;
     extern const unsigned short normalB[0x340] PROGMEM;
 
+    constexpr int maxLogoDimensions = 128;
+    constexpr int numLogoMenus = 3;
+
     extern const unsigned short normalResizedBLogo[0x3400] PROGMEM;
     extern const unsigned short portraitLogo[0x4000] PROGMEM;
     extern const unsigned short clockLogo[0x4000] PROGMEM;
@@ -26,7 +29,7 @@ namespace assets {
     enum logoId {
         resizedBird,
         portrait,
-        logo,
+        hour,
     };
 
     MainMenuLogo getMainMenuLogo(uint8_t id);
