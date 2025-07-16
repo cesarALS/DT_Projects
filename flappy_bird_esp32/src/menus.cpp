@@ -7,6 +7,46 @@ namespace menus {
     std::unordered_map<Name, void(*)()> list;
     bool firstEntrance = true;
 
+    void advance() {
+        for (auto &mode : list) {
+            if(currentMode == mode.first) {
+                mode.second();
+                return;
+            }
+        }
+    }
+
+    namespace InitMenu {
+        TFT_eSprite panda = TFT_eSprite(&tft);
+
+        void menu() {
+
+            if (firstEntrance) {
+                tft.fillScreen(TFT_WHITE);
+                tft.setTextColor(TFT_BLACK);
+
+                screen::initializeSprite(panda, assets::PANDA_WIDTH, assets::PANDA_HEIGHT, false, 16);
+                panda.fillSprite(TFT_WHITE);
+                tft.drawCentreString("Panda Voyager", tft.width()/2, tft.height()*0.1, 4);
+                panda.pushImage(0, 0, assets::PANDA_WIDTH, assets::PANDA_HEIGHT, assets::Panda);
+                panda.pushSprite(tft.width()/2-panda.width()/2, tft.height()/2-panda.height()/2);
+
+                screen::displayButtonIndications(tft, "Juego", "Menu");
+
+                firstEntrance = false;
+            }
+
+            if(button::list.at(button::RIGHT_ID)->consumeClick()) {
+                panda.deleteSprite();
+                changeMenu(Name::MainMenu);
+            }
+            else if (button::list.at(button::LEFT_ID)->consumeClick()) {
+                panda.deleteSprite();
+                changeMenu(Name::FlappyBird);
+            }
+        }
+    }
+
     namespace MainMenu {
 
         TFT_eSprite bgSpr = TFT_eSprite(&tft);
@@ -78,49 +118,10 @@ namespace menus {
         }
     }
 
-    void advance() {
-        for (auto &mode : list) {
-            if(currentMode == mode.first) {
-                mode.second();
-                return;
-            }
-        }
-    }
-
     void changeMenu(Name mode, int color) {
         currentMode = mode;
         screen::doubleWipe(5, color);
         firstEntrance = true;
-    }
-
-    void initMenu() {
-
-        TFT_eSprite panda = TFT_eSprite(&tft);
-
-        if (firstEntrance) {
-            tft.fillScreen(TFT_WHITE);
-            tft.setTextColor(TFT_BLACK);
-
-            screen::initializeSprite(panda, assets::PANDA_WIDTH, assets::PANDA_HEIGHT, false, 16);
-            panda.fillSprite(TFT_WHITE);
-            tft.drawCentreString("Panda Voyager", tft.width()/2, tft.height()*0.1, 4);
-            panda.pushImage(0, 0, assets::PANDA_WIDTH, assets::PANDA_HEIGHT, assets::Panda);
-            panda.pushSprite(tft.width()/2-panda.width()/2, tft.height()/2-panda.height()/2);
-
-            screen::displayButtonIndications(tft, "Juego", "Menu");
-
-            firstEntrance = false;
-        }
-
-        if(button::list.at(button::RIGHT_ID)->consumeClick()) {
-            panda.deleteSprite();
-            changeMenu(Name::MainMenu);
-        }
-        else if (button::list.at(button::LEFT_ID)->consumeClick()) {
-            panda.deleteSprite();
-            changeMenu(Name::FlappyBird);
-        }
-
     }
 
     void gameMenu() {

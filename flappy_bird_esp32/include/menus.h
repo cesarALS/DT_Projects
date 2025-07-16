@@ -18,6 +18,13 @@ namespace menus {
     extern std::unordered_map<Name, void(*)()> list;
     extern bool firstEntrance;
 
+    void advance();
+
+    namespace InitMenu{
+        extern TFT_eSprite panda;
+        void menu();
+    }
+
     namespace MainMenu{
         extern TFT_eSprite bgSpr;
         extern TFT_eSprite logSpr;
@@ -33,10 +40,8 @@ namespace menus {
         void menu();
     };
 
-    void advance();
     void changeMenu(Name mode, int color = TFT_BLACK);
 
-    void initMenu();
     void gameMenu();
     void hourMenu();
 
