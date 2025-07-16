@@ -13,24 +13,22 @@ namespace game {
 
     namespace canvas {
 
-        TFT_eSprite spr = TFT_eSprite(&tft);
-
         const colorPalette* currentTime = &day;
 
         void draw(){
-            spr.pushSprite(PADDING, PADDING);
+            screen::bgSpr.pushSprite(screen::PADDING, screen::PADDING);
         }
 
         void init() {
-            screen::initializeSprite(spr, WIDTH, HEIGHT, false);
+            screen::initializeSprite(screen::bgSpr, screen::CANVAS_WIDTH, screen::CANVAS_HEIGHT, false);
         }
 
         void staticRender() {
-            canvas::spr.fillSprite(canvas::currentTime->sky);
+            screen::bgSpr.fillSprite(canvas::currentTime->sky);
 
-            canvas::spr.fillSmoothCircle(
-                canvas::spr.width()*0.8,
-                canvas::spr.height()*0.2,
+            screen::bgSpr.fillSmoothCircle(
+                screen::bgSpr.width()*0.8,
+                screen::bgSpr.height()*0.2,
                 canvas::SATELITE_RADIUS,
                 canvas::currentTime->satelite,
                 canvas::currentTime->sky
@@ -39,52 +37,52 @@ namespace game {
 
         void changeBgStyle() {
             canvas::currentTime = (bool)random(0, 2) ? &canvas::day : &canvas::night;
-            canvas::spr.setTextColor(canvas::currentTime->text, canvas::currentTime->text);
+            screen::bgSpr.setTextColor(canvas::currentTime->text, canvas::currentTime->text);
         }
 
         void gameMenuDisplay() {
             staticRender();
-            spr.setTextColor(TFT_BLACK, TFT_BLACK);
+            screen::bgSpr.setTextColor(TFT_BLACK, TFT_BLACK);
 
             constexpr float base = 0.45;
 
-            spr.fillRect(
-                spr.width()*0.4,
-                spr.height()*base,
-                spr.width()*0.6,
-                spr.height()*0.35,
+            screen::bgSpr.fillRect(
+                screen::bgSpr.width()*0.4,
+                screen::bgSpr.height()*base,
+                screen::bgSpr.width()*0.6,
+                screen::bgSpr.height()*0.35,
                 TFT_WHITE
             );
 
-            spr.drawCentreString(
+            screen::bgSpr.drawCentreString(
                 "Record: " + String(state::highScore),
-                spr.width()*0.7,
-                spr.height()*(base+0.05),
+                screen::bgSpr.width()*0.7,
+                screen::bgSpr.height()*(base+0.05),
                 4
             );
 
-            spr.drawCentreString(
+            screen::bgSpr.drawCentreString(
                 "Ultimo: " + String(state::score),
-                spr.width()*0.7,
-                spr.height()*(base+0.2),
+                screen::bgSpr.width()*0.7,
+                screen::bgSpr.height()*(base+0.2),
                 4
             );
 
-            screen::displayButtonIndications(spr, "Juega", "Menu");
+            screen::displayButtonIndications(screen::bgSpr, "Juega", "Menu");
 
-            spr.setTextColor(currentTime->text, currentTime->text);
+            screen::bgSpr.setTextColor(currentTime->text, currentTime->text);
 
-            spr.drawCentreString(
+            screen::bgSpr.drawCentreString(
                 "JUEGO",
-                spr.width()*0.35,
-                spr.height()*0.15,
+                screen::bgSpr.width()*0.35,
+                screen::bgSpr.height()*0.15,
                 4
             );
 
             bird::draw(
                 state::menuReps % 20 < 10,
-                spr.width()*0.1,
-                spr.height()/2-bird::spr.height()*0.25
+                screen::bgSpr.width()*0.1,
+                screen::bgSpr.height()/2-bird::spr.height()*0.25
             );
 
             draw();
@@ -94,7 +92,7 @@ namespace game {
         }
 
         void destroySprites() {
-            spr.deleteSprite();
+            screen::bgSpr.deleteSprite();
             bird::spr.deleteSprite();
             for (auto &spr : walls::spr) {
                 spr.deleteSprite();
@@ -126,9 +124,9 @@ namespace game {
 
             for (int i=0; i<walls::NUM; i++) {
                 walls::drawSprite(i, walls::y[i]);
-                walls::spr[i].pushToSprite(&canvas::spr, walls::x[i], 0, TFT_BLACK);
+                walls::spr[i].pushToSprite(&screen::bgSpr, walls::x[i], 0, TFT_BLACK);
 
-                if (walls::x[i] < 0) walls::computeNew(i, canvas::WIDTH);
+                if (walls::x[i] < 0) walls::computeNew(i, screen::CANVAS_WIDTH);
 
                 if(i == walls::closestToBird) {
                     if (walls::x[i] <= bird::X) {
@@ -149,7 +147,7 @@ namespace game {
                 walls::x[i] -= walls::displacement;
             }
 
-            canvas::spr.drawCentreString(String(score),tft.width()/2,10,4);
+            screen::bgSpr.drawCentreString(String(score),tft.width()/2,10,4);
 
             bird::draw(bird::velocity<0, bird::X, bird::y);
 
@@ -185,19 +183,19 @@ namespace game {
 
         uint8_t displacement = 3;
 
-        int lastHeight = canvas::HEIGHT/2;
+        int lastHeight = screen::CANVAS_HEIGHT/2;
         uint8_t closestToBird = 0;
 
         void init() {
             for(int wall=0; wall<walls::NUM; wall++) {
-                screen::initializeSprite(spr[wall], WIDTH, canvas::HEIGHT, false);
+                screen::initializeSprite(spr[wall], WIDTH, screen::CANVAS_HEIGHT, false);
             }
         }
 
         void drawSprite(uint8_t wall ,int gap_y) {
             spr[wall].fillSprite(TFT_BLACK);
             spr[wall].fillRect(0, 0, WIDTH, gap_y, canvas::currentTime->wall);
-            spr[wall].fillRect(0, gap_y + GAP, WIDTH, canvas::HEIGHT - (gap_y + GAP), canvas::currentTime->wall);
+            spr[wall].fillRect(0, gap_y + GAP, WIDTH, screen::CANVAS_HEIGHT - (gap_y + GAP), canvas::currentTime->wall);
         }
 
         void computeNew(uint8_t index, int x) {
@@ -227,7 +225,7 @@ namespace game {
                 computeNew(wall, FIRST_WALL+BETWEEN_WALLS_GAP*wall);
             }
 
-            lastHeight = canvas::HEIGHT/2;
+            lastHeight = screen::CANVAS_HEIGHT/2;
             closestToBird = 0;
 
         }
@@ -238,7 +236,7 @@ namespace game {
 
         TFT_eSprite spr = TFT_eSprite(&tft);
 
-        int y = canvas::HEIGHT/2;
+        int y = screen::CANVAS_HEIGHT/2;
         float velocity = 0;
 
         void init() {
@@ -248,21 +246,21 @@ namespace game {
         void displace(bool pressed) {
             velocity += GRAVITY;
             y += (int)floor(velocity);
-            y = max(0, min(y, canvas::HEIGHT-HEIGHT));
+            y = max(0, min(y, screen::CANVAS_HEIGHT-HEIGHT));
             if(pressed){
                 velocity = IMPULSE;
             }
         }
 
         void reset() {
-            y = canvas::HEIGHT/2;
+            y = screen::CANVAS_HEIGHT/2;
             velocity = 0;
         }
 
         void draw(bool flappy, int x, int y) {
             spr.fillSprite(TFT_BLACK);
             spr.pushImage(0,0,spr.width(),spr.height(), flappy ? assets::flappyB : assets::normalB);
-            spr.pushToSprite(&canvas::spr,x,y,TFT_BLACK);
+            spr.pushToSprite(&screen::bgSpr,x,y,TFT_BLACK);
         }
 
     }

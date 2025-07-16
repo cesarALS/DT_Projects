@@ -26,7 +26,6 @@ namespace menus {
     }
 
     namespace MainMenu{
-        extern TFT_eSprite bgSpr;
         extern TFT_eSprite logSpr;
         extern assets::MainMenuLogo currentLogo;
         extern assets::logoId currentMenu;

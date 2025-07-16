@@ -94,6 +94,8 @@ namespace button {
 
 namespace screen {
 
+    TFT_eSprite bgSpr = TFT_eSprite(&tft);
+
     void initializeSprite(TFT_eSprite& spr, int w, int h, bool swap, uint8_t colorDepth) {
         spr.createSprite(w, h);
         spr.setColorDepth(colorDepth);

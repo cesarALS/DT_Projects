@@ -49,8 +49,7 @@ namespace menus {
 
     namespace MainMenu {
 
-        TFT_eSprite bgSpr = TFT_eSprite(&tft);
-        TFT_eSprite logoSpr = TFT_eSprite(&bgSpr);
+        TFT_eSprite logoSpr = TFT_eSprite(&screen::bgSpr);
         assets::logoId currentLogoId = assets::logoId::resizedBird;
         assets::MainMenuLogo currentLogo = assets::getMainMenuLogo(currentLogoId);
 
@@ -62,15 +61,15 @@ namespace menus {
         void menu() {
 
             if(firstEntrance) {
-                screen::initializeSprite(bgSpr, 236, 236, true);
+                screen::initializeSprite(screen::bgSpr, 236, 236, true);
                 screen::initializeSprite(logoSpr, assets::maxLogoDimensions, assets::maxLogoDimensions, false, 16);
                 firstEntrance = false;
             }
 
-            bgSpr.fillScreen(0x196b);
-            bgSpr.setTextColor(TFT_WHITE, TFT_WHITE);
-            bgSpr.drawCentreString("Menu Principal", bgSpr.width()/2, 10, 4);
-            screen::displayButtonIndications(bgSpr, "OK", "Cambiar");
+            screen::bgSpr.fillScreen(0x196b);
+            screen::bgSpr.setTextColor(TFT_WHITE, TFT_WHITE);
+            screen::bgSpr.drawCentreString("Menu Principal", screen::bgSpr.width()/2, 10, 4);
+            screen::displayButtonIndications(screen::bgSpr, "OK", "Cambiar");
 
             logoSpr.fillSprite(TFT_BLACK);
 
@@ -82,15 +81,15 @@ namespace menus {
                 currentLogo.logo
             );
 
-            logoSpr.pushToSprite(&bgSpr, bgSpr.width()*0.425-logoSpr.width()/2, bgSpr.width()*0.175, TFT_BLACK);
+            logoSpr.pushToSprite(&screen::bgSpr, screen::bgSpr.width()*0.425-logoSpr.width()/2, screen::bgSpr.width()*0.175, TFT_BLACK);
 
-            bgSpr.fillTriangle(
-                arrowTriangleStartingX, bgSpr.height()/2+arrowTriangleHalf,
-                arrowTriangleStartingX, bgSpr.height()/2+arrowTriangleHalf+arrowTriangleBase,
-                arrowTriangleStartingX+arrowTriangleBase, bgSpr.height()/2+arrowTriangleHalf+arrowTriangleBase/2, TFT_GREEN
+            screen::bgSpr.fillTriangle(
+                arrowTriangleStartingX, screen::bgSpr.height()/2+arrowTriangleHalf,
+                arrowTriangleStartingX, screen::bgSpr.height()/2+arrowTriangleHalf+arrowTriangleBase,
+                arrowTriangleStartingX+arrowTriangleBase, screen::bgSpr.height()/2+arrowTriangleHalf+arrowTriangleBase/2, TFT_GREEN
             );
 
-            bgSpr.pushSprite(1, 1);
+            screen::bgSpr.pushSprite(1, 1);
 
             if(button::list.at(button::RIGHT_ID)->consumeClick()) {
                 changeLogo();
@@ -111,7 +110,7 @@ namespace menus {
                     changeMenu(Name::FlappyBird, TFT_BLACK);
                     break;
                 }
-                bgSpr.deleteSprite();
+                screen::bgSpr.deleteSprite();
                 logoSpr.deleteSprite();
             }
 
