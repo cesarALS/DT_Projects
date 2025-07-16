@@ -30,10 +30,10 @@ namespace menus {
             tft.fillScreen(TFT_WHITE);
             tft.setTextColor(TFT_BLACK);
 
-            screen::initializeSprite(panda, PANDA_WIDTH, PANDA_HEIGHT, false, 16);
+            screen::initializeSprite(panda, assets::PANDA_WIDTH, assets::PANDA_HEIGHT, false, 16);
             panda.fillSprite(TFT_WHITE);
             tft.drawCentreString("Panda Voyager", tft.width()/2, tft.height()*0.1, 4);
-            panda.pushImage(0, 0, PANDA_WIDTH, PANDA_HEIGHT, Panda);
+            panda.pushImage(0, 0, assets::PANDA_WIDTH, assets::PANDA_HEIGHT, assets::Panda);
             panda.pushSprite(tft.width()/2-panda.width()/2, tft.height()/2-panda.height()/2);
 
             screen::displayButtonIndications(tft, "Hora", "Juego");
