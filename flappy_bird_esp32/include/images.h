@@ -39,4 +39,10 @@ namespace assets {
 
     extern const unsigned short Panda[0x3840] PROGMEM;
 
+    namespace portrait {
+        constexpr int ALL_WIDTH = 200;
+        constexpr int ALL_HEIGHT = 200;
+        extern const unsigned short all[0x9C40] PROGMEM;
+    }
+
 };
