@@ -20,6 +20,7 @@ void setup() {
     menus::list.emplace(menus::Name::MainMenu, menus::MainMenu::menu);
     menus::list.emplace(menus::Name::FlappyBird, menus::gameMenu);
     menus::list.emplace(menus::Name::Hour, menus::hourMenu);
+    menus::list.emplace(menus::Name::Portrait, menus::portraitMenu);
 
 }
 

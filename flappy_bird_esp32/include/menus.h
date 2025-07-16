@@ -43,5 +43,6 @@ namespace menus {
 
     void gameMenu();
     void hourMenu();
+    void portraitMenu();
 
 }

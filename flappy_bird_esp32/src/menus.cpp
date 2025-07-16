@@ -104,7 +104,7 @@ namespace menus {
                     changeMenu(Name::Hour, TFT_BLACK);
                     break;
                 case (assets::logoId::portrait):
-                    changeMenu(Name::Hour, TFT_BLACK);
+                    changeMenu(Name::Portrait, TFT_BLACK);
                     break;
                 default:
                     changeMenu(Name::FlappyBird, TFT_BLACK);
@@ -178,6 +178,29 @@ namespace menus {
 
         if (button::list.at(button::RIGHT_ID)->consumeClick()) {
             changeMenu(Name::MainMenu);
+        }
+    }
+
+    void portraitMenu() {
+        if(firstEntrance) {
+            screen::initializeSprite(screen::bgSpr, screen::CANVAS_WIDTH, screen::CANVAS_HEIGHT, true);
+        }
+
+        screen::bgSpr.pushImage(
+            screen::bgSpr.width()/2-assets::port::ALL_WIDTH/2,
+            screen::bgSpr.height()*0.8/2-assets::port::ALL_HEIGHT/2,
+            assets::port::ALL_WIDTH,
+            assets::port::ALL_HEIGHT,
+            assets::port::all
+        );
+
+        screen::displayButtonIndications(screen::bgSpr, "", "Menu");
+
+        screen::bgSpr.pushSprite(screen::PADDING, screen::PADDING);
+
+        if (button::list.at(button::RIGHT_ID)->consumeClick()) {
+            changeMenu(Name::MainMenu);
+            screen::bgSpr.deleteSprite();
         }
     }
 
