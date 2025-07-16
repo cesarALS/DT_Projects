@@ -15,10 +15,7 @@ void setup() {
     Serial.printf("Free space: %u bytes (%.2f KB)\n", free_space, free_space / 1024.0);
 
     globalsInit();
-
-    menus::list.emplace(menus::Name::Init, menus::initMenu);
-    menus::list.emplace(menus::Name::FlappyBird, menus::gameMenu);
-    menus::list.emplace(menus::Name::Hour, menus::hourMenu);
+    menus::init();
 
 }
 

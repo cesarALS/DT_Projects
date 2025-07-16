@@ -45,6 +45,12 @@ namespace screen {
 
     constexpr uint8_t COLOR_DEPTH       = 8;
 
+    constexpr uint8_t CANVAS_WIDTH  = 236;
+    constexpr uint8_t CANVAS_HEIGHT = 236;      // 238+ HEIGHT induces issues
+    constexpr uint8_t PADDING  = 1;         // The padding of the canvas
+
+    extern TFT_eSprite bgSpr;
+
     void initializeSprite(TFT_eSprite& spr, int w, int h, bool swap, uint8_t colorDepth=COLOR_DEPTH);
 
     void displayButtonIndications(TFT_eSPI& spr, const char* leftText="", const char* rightText="", int color=TFT_BLACK);

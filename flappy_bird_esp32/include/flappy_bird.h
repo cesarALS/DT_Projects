@@ -12,13 +12,7 @@ namespace game {
 
     namespace canvas {
 
-        constexpr uint8_t WIDTH    = 236;
-        constexpr uint8_t HEIGHT   = 236;     // 238+ HEIGHT induces issues
-        constexpr uint8_t PADDING  = 1;       // The padding of the game canvas
-
         constexpr uint8_t SATELITE_RADIUS = 25;
-
-        extern TFT_eSprite spr;
 
         struct colorPalette {
             int sky;
@@ -45,20 +39,6 @@ namespace game {
 
     };
 
-    namespace state {
-        enum opt {
-            Menu,
-            Playing,
-        };
-        extern int current;
-        extern int score;
-        extern int highScore;
-        extern int menuReps;
-        extern bool scoreHasChanged;
-        void reset();
-        void advanceGame();
-    }
-
     namespace walls {
 
         constexpr uint8_t NUM = 2;
@@ -66,13 +46,13 @@ namespace game {
         constexpr uint8_t WIDTH             = 30;
         constexpr uint8_t GAP               = 95;
         constexpr uint8_t MINIMAL_HEIGHT    = 20;                   // The minimum height of a semi-wall
-        constexpr uint8_t BETWEEN_WALLS_GAP = canvas::WIDTH / 2;     // Wall between differents walls
-        constexpr uint8_t FIRST_WALL        = canvas::WIDTH * 0.75;  // First wall of the game
+        constexpr uint8_t BETWEEN_WALLS_GAP = screen::CANVAS_WIDTH / 2;     // Wall between differents walls
+        constexpr uint8_t FIRST_WALL        = screen::CANVAS_WIDTH * 0.75;  // First wall of the game
 
         constexpr uint8_t LOWER_BOUND       = MINIMAL_HEIGHT;
-        constexpr uint8_t UPPER_BOUND       = canvas::HEIGHT - walls::GAP - walls::MINIMAL_HEIGHT;
+        constexpr uint8_t UPPER_BOUND       = screen::CANVAS_HEIGHT - walls::GAP - walls::MINIMAL_HEIGHT;
 
-        constexpr uint8_t NEW_WALL_DIFFERENTIAL = 110; // The maximum difference of between concurrent walls
+        constexpr uint8_t NEW_WALL_DIFFERENTIAL = 120; // The maximum difference of between concurrent walls
 
         extern uint8_t displacement;
 
@@ -111,5 +91,19 @@ namespace game {
         void draw(bool flappy, int x, int y);
 
     };
+
+    namespace state {
+        enum opt {
+            Menu,
+            Playing,
+        };
+        extern int current;
+        extern int score;
+        extern int highScore;
+        extern int menuReps;
+        extern bool scoreHasChanged;
+        void reset();
+        void advanceGame();
+    }
 
 };
