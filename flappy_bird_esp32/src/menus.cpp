@@ -171,7 +171,7 @@ namespace menus {
             tft.drawCentreString("Hora Colombia", tft.width()*0.5, 20, 4);
 
             tft.drawCentreString("15:02:30", tft.width()*0.475, tft.height()*0.3, 7);
-            tft.drawCentreString("Lunes 24 Julio", tft.width()*0.5, tft.height()*0.6, 4);
+            tft.drawCentreString("Mierco. 26 Julio", tft.width()*0.5, tft.height()*0.6, 4);
 
             firstEntrance = false;
         }
