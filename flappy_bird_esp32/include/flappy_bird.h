@@ -39,20 +39,6 @@ namespace game {
 
     };
 
-    namespace state {
-        enum opt {
-            Menu,
-            Playing,
-        };
-        extern int current;
-        extern int score;
-        extern int highScore;
-        extern int menuReps;
-        extern bool scoreHasChanged;
-        void reset();
-        void advanceGame();
-    }
-
     namespace walls {
 
         constexpr uint8_t NUM = 2;
@@ -105,5 +91,19 @@ namespace game {
         void draw(bool flappy, int x, int y);
 
     };
+
+    namespace state {
+        enum opt {
+            Menu,
+            Playing,
+        };
+        extern int current;
+        extern int score;
+        extern int highScore;
+        extern int menuReps;
+        extern bool scoreHasChanged;
+        void reset();
+        void advanceGame();
+    }
 
 };
