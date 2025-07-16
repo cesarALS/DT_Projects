@@ -72,7 +72,7 @@ namespace game {
         constexpr uint8_t LOWER_BOUND       = MINIMAL_HEIGHT;
         constexpr uint8_t UPPER_BOUND       = canvas::HEIGHT - walls::GAP - walls::MINIMAL_HEIGHT;
 
-        constexpr uint8_t NEW_WALL_DIFFERENTIAL = 110; // The maximum difference of between concurrent walls
+        constexpr uint8_t NEW_WALL_DIFFERENTIAL = 120; // The maximum difference of between concurrent walls
 
         extern uint8_t displacement;
 

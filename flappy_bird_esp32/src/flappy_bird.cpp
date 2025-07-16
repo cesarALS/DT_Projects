@@ -155,7 +155,7 @@ namespace game {
 
             canvas::draw();
 
-            if(score>0 && scoreHasChanged && score%10==0) {
+            if(score>0 && scoreHasChanged && score%20==0) {
                 walls::displacement++;
             }
 
