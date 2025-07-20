@@ -9,23 +9,27 @@ namespace hour {
 
   void init() {
 
+    WiFi.disconnect(true);
     unsigned long millisMarker = millis();
 
     Serial.printf("Starting connection to %s\n", SSID);
     WiFi.begin(SSID, PASSWORD);
-    if (WiFi.status() != WL_CONNECTED) {
-      Serial.printf(".");
+    delay(100);
+    while (WiFi.status() != WL_CONNECTED) {
       if(millis()-millisMarker > 15000) {
         Serial.println("\nFailed to connect");
+        return;
       }
     }
     Serial.printf("\nConnected to %s\n", SSID);
+    configTime(GMT_OFFSET_SEC, DAY_LIGHT_OFFSET_SEC, NTP_SERVER);
+    delay(100);
     alreadyInitialized = true;
+
   }
 
   bool getLocalTime() {
 
-    configTime(GMT_OFFSET_SEC, DAY_LIGHT_OFFSET_SEC, NTP_SERVER);
     bool timeAvailable = getLocalTime(&timeInfo);
 
     if    (!timeAvailable) Serial.println("Failed to obtain time");
