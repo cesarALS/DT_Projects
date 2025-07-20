@@ -119,7 +119,6 @@ namespace menus {
                     changeMenu(Name::FlappyBird, TFT_BLACK);
                     break;
                 }
-                screen::bgSpr.deleteSprite();
                 logoSpr.deleteSprite();
             }
 
@@ -129,6 +128,7 @@ namespace menus {
     void changeMenu(Name mode, int color) {
         currentMode = mode;
         screen::doubleWipe(5, color);
+        if(screen::bgSpr.created()) screen::bgSpr.deleteSprite();
         firstEntrance = true;
     }
 
@@ -176,11 +176,6 @@ namespace menus {
         if (firstEntrance) {
 
             tft.fillScreen(TFT_BLACK);
-            delay(10);
-
-            if (screen::bgSpr.created()) {
-                screen::bgSpr.deleteSprite();
-            }
 
             screen::initializeSprite(screen::bgSpr, screen::CANVAS_WIDTH, screen::CANVAS_HEIGHT, false);
             screen::bgSpr.setTextColor(TFT_WHITE, TFT_WHITE);
@@ -214,7 +209,6 @@ namespace menus {
         }
 
         if (button::list.at(button::RIGHT_ID)->consumeClick()) {
-            screen::bgSpr.deleteSprite();
             changeMenu(Name::MainMenu);
 
         }
@@ -239,7 +233,6 @@ namespace menus {
 
         if (button::list.at(button::RIGHT_ID)->consumeClick()) {
             changeMenu(Name::MainMenu);
-            screen::bgSpr.deleteSprite();
         }
     }
 
