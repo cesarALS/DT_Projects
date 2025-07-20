@@ -4,9 +4,10 @@ namespace hour {
 
   std::tm timeInfo;
   bool alreadyInitialized = false;
-  char buffer[80];
+  char hourBuffer[20];
+  char dayBuffer[40];
 
-  bool init() {
+  void init() {
 
     unsigned long millisMarker = millis();
 
@@ -14,14 +15,12 @@ namespace hour {
     WiFi.begin(SSID, PASSWORD);
     if (WiFi.status() != WL_CONNECTED) {
       Serial.printf(".");
-      if(millis()-millisMarker > 30000) {
+      if(millis()-millisMarker > 15000) {
         Serial.println("\nFailed to connect");
-        return false;
       }
     }
-    Serial.printf("Connected to %s\n", SSID);
+    Serial.printf("\nConnected to %s\n", SSID);
     alreadyInitialized = true;
-    return true;
   }
 
   bool getLocalTime() {
@@ -31,8 +30,16 @@ namespace hour {
 
     if    (!timeAvailable) Serial.println("Failed to obtain time");
     else  {
-      strftime(buffer, sizeof(buffer), TIME_FORMAT, &timeInfo);
-      Serial.println(&timeInfo, TIME_FORMAT);
+      sprintf(hourBuffer, "%02d:%02d:%02d",
+        timeInfo.tm_hour,
+        timeInfo.tm_min,
+        timeInfo.tm_sec
+      );
+      sprintf(dayBuffer, "%s %02d %s",
+        dias[timeInfo.tm_wday],
+        timeInfo.tm_mday,
+        meses[timeInfo.tm_mon]
+      );
     }
 
     return timeAvailable;
