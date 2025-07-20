@@ -1,5 +1,6 @@
 #include "menus.h"
 #include "flappy_bird.h"
+#include "hour.h"
 
 namespace menus {
 

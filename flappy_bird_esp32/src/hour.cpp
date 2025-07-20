@@ -2,16 +2,21 @@
 
 namespace hour {
 
-  bool connectedToWifi = false;
+  bool init() {
 
-  void init() {
-
-    setlocale(LC_ALL, "es_ES.UTF-8");
+    unsigned long millisMarker = millis();
 
     Serial.printf("Starting connection to %s\n", SSID);
     WiFi.begin(SSID, PASSWORD);
-    connectedToWifi = false;
-
+    if (WiFi.status() != WL_CONNECTED) {
+      Serial.printf(".");
+      if(millis()-millisMarker > 30000) {
+        Serial.println("\nFailed to connect");
+        return false;
+      }
+    }
+    Serial.printf("Connected to %s\n", SSID);
+    return true;
   }
 
   bool getLocalTime() {
@@ -26,15 +31,6 @@ namespace hour {
     }
 
     return timeAvailable;
-  }
-
-  void isAlreadyConnected() {
-    if (WiFi.status() != WL_CONNECTED) {
-        Serial.printf("Connecting to %s\n", SSID);
-        return;
-    }
-    Serial.printf("Connected to %s\n", SSID);
-    connectedToWifi = true;
   }
 
 }

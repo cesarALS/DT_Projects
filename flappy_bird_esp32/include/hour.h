@@ -14,13 +14,10 @@ namespace hour {
     constexpr int   DAY_LIGHT_OFFSET_SEC    = 0;                //no daylight offset
     constexpr const char* TIME_FORMAT       = "%A, %B %d %Y %H:%M:%S";
 
-    extern bool connectedToWifi;
-
     extern struct std::tm timeInfo;
 
     extern char buffer[80];
 
-    void init();
-    void isAlreadyConnected();
+    bool init();
     bool getLocalTime();
 }
