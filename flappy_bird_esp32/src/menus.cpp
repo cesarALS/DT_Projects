@@ -182,6 +182,7 @@ namespace menus {
             if (!hour::alreadyInitialized) {
                 screen::bgSpr.fillScreen(0x196b);
                 screen::bgSpr.drawCentreString("Conectandose", screen::bgSpr.width()/2, screen::bgSpr.height()/2, 4);
+                screen::bgSpr.pushSprite(screen::PADDING, screen::PADDING);
                 hour::init();
             }
 
@@ -199,12 +200,13 @@ namespace menus {
                 screen::bgSpr.drawCentreString("Error", screen::bgSpr.width()/2, screen::bgSpr.height()*0.4, 4);
             }
             else {
-                Serial.println(hour::hourBuffer);
                 screen::bgSpr.drawCentreString("Hora Colombia", screen::bgSpr.width()*0.5, 20, 4);
 
                 screen::bgSpr.drawCentreString(hour::hourBuffer, screen::bgSpr.width()*0.5, screen::bgSpr.height()*0.3, 7);
                 screen::bgSpr.drawCentreString(hour::dayBuffer, screen::bgSpr.width()*0.5, screen::bgSpr.height()*0.6, 4);
             }
+
+            screen::bgSpr.pushSprite(screen::PADDING, screen::PADDING);
 
         }
 
