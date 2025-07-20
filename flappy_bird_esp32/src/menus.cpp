@@ -1,5 +1,6 @@
 #include "menus.h"
 #include "flappy_bird.h"
+#include "hour.h"
 
 namespace menus {
 
@@ -22,6 +23,13 @@ namespace menus {
                 return;
             }
         }
+    }
+
+    void changeMenu(Name mode, int color) {
+        currentMode = mode;
+        screen::doubleWipe(5, color);
+        if(screen::bgSpr.created()) screen::bgSpr.deleteSprite();
+        firstEntrance = true;
     }
 
     namespace InitMenu {
@@ -118,17 +126,10 @@ namespace menus {
                     changeMenu(Name::FlappyBird, TFT_BLACK);
                     break;
                 }
-                screen::bgSpr.deleteSprite();
                 logoSpr.deleteSprite();
             }
 
         }
-    }
-
-    void changeMenu(Name mode, int color) {
-        currentMode = mode;
-        screen::doubleWipe(5, color);
-        firstEntrance = true;
     }
 
     void gameMenu() {
@@ -171,21 +172,47 @@ namespace menus {
     }
 
     void hourMenu() {
+
         if (firstEntrance) {
-            tft.fillScreen(0x196b);
-            screen::displayButtonIndications(tft, "", "Menu");
 
-            tft.setTextColor(TFT_WHITE, TFT_WHITE);
-            tft.drawCentreString("Hora Colombia", tft.width()*0.5, 20, 4);
+            tft.fillScreen(TFT_BLACK);
 
-            tft.drawCentreString("15:02:30", tft.width()*0.475, tft.height()*0.3, 7);
-            tft.drawCentreString("Mierco. 26 Julio", tft.width()*0.5, tft.height()*0.6, 4);
+            screen::initializeSprite(screen::bgSpr, screen::CANVAS_WIDTH, screen::CANVAS_HEIGHT, false);
+            screen::bgSpr.setTextColor(TFT_WHITE, TFT_WHITE);
+            if (!hour::alreadyInitialized) {
+                screen::bgSpr.fillScreen(0x196b);
+                screen::bgSpr.drawCentreString("Conectandose", screen::bgSpr.width()/2, screen::bgSpr.height()/2, 4);
+                screen::bgSpr.pushSprite(screen::PADDING, screen::PADDING);
+                hour::init();
+            }
 
             firstEntrance = false;
+
+        }
+        else {
+
+            screen::bgSpr.fillScreen(0x196b);
+            screen::displayButtonIndications(screen::bgSpr, "", "Menu");
+
+            screen::bgSpr.setTextColor(TFT_WHITE, TFT_WHITE);
+
+            if(!hour::getLocalTime()) {
+                screen::bgSpr.drawCentreString("Error", screen::bgSpr.width()/2, screen::bgSpr.height()*0.4, 4);
+            }
+            else {
+                screen::bgSpr.drawCentreString("Hora Colombia", screen::bgSpr.width()*0.5, 20, 4);
+
+                screen::bgSpr.drawCentreString(hour::hourBuffer, screen::bgSpr.width()*0.5, screen::bgSpr.height()*0.3, 7);
+                screen::bgSpr.drawCentreString(hour::dayBuffer, screen::bgSpr.width()*0.5, screen::bgSpr.height()*0.6, 4);
+            }
+
+            screen::bgSpr.pushSprite(screen::PADDING, screen::PADDING);
+
         }
 
         if (button::list.at(button::RIGHT_ID)->consumeClick()) {
             changeMenu(Name::MainMenu);
+
         }
     }
 
@@ -208,7 +235,6 @@ namespace menus {
 
         if (button::list.at(button::RIGHT_ID)->consumeClick()) {
             changeMenu(Name::MainMenu);
-            screen::bgSpr.deleteSprite();
         }
     }
 
