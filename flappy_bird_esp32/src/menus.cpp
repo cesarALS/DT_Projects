@@ -25,6 +25,13 @@ namespace menus {
         }
     }
 
+    void changeMenu(Name mode, int color) {
+        currentMode = mode;
+        screen::doubleWipe(5, color);
+        if(screen::bgSpr.created()) screen::bgSpr.deleteSprite();
+        firstEntrance = true;
+    }
+
     namespace InitMenu {
         TFT_eSprite panda = TFT_eSprite(&tft);
 
@@ -123,13 +130,6 @@ namespace menus {
             }
 
         }
-    }
-
-    void changeMenu(Name mode, int color) {
-        currentMode = mode;
-        screen::doubleWipe(5, color);
-        if(screen::bgSpr.created()) screen::bgSpr.deleteSprite();
-        firstEntrance = true;
     }
 
     void gameMenu() {
