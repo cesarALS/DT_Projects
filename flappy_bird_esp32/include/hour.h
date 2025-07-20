@@ -16,6 +16,8 @@ namespace hour {
 
     extern struct std::tm timeInfo;
 
+    extern bool alreadyInitialized;
+
     extern char buffer[80];
 
     bool init();

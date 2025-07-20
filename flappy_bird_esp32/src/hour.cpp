@@ -2,6 +2,8 @@
 
 namespace hour {
 
+  bool alreadyInitialized = false;
+
   bool init() {
 
     unsigned long millisMarker = millis();
@@ -16,6 +18,7 @@ namespace hour {
       }
     }
     Serial.printf("Connected to %s\n", SSID);
+    alreadyInitialized = true;
     return true;
   }
 
