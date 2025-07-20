@@ -172,21 +172,51 @@ namespace menus {
     }
 
     void hourMenu() {
+
         if (firstEntrance) {
-            tft.fillScreen(0x196b);
-            screen::displayButtonIndications(tft, "", "Menu");
 
-            tft.setTextColor(TFT_WHITE, TFT_WHITE);
-            tft.drawCentreString("Hora Colombia", tft.width()*0.5, 20, 4);
+            tft.fillScreen(TFT_BLACK);
+            delay(10);
 
-            tft.drawCentreString("15:02:30", tft.width()*0.475, tft.height()*0.3, 7);
-            tft.drawCentreString("Mierco. 26 Julio", tft.width()*0.5, tft.height()*0.6, 4);
+            if (screen::bgSpr.created()) {
+                screen::bgSpr.deleteSprite();
+            }
+
+            screen::initializeSprite(screen::bgSpr, screen::CANVAS_WIDTH, screen::CANVAS_HEIGHT, false);
+            screen::bgSpr.setTextColor(TFT_WHITE, TFT_WHITE);
+            if (!hour::alreadyInitialized) {
+                screen::bgSpr.fillScreen(0x196b);
+                screen::bgSpr.drawCentreString("Conectandose", screen::bgSpr.width()/2, screen::bgSpr.height()/2, 4);
+                hour::init();
+            }
 
             firstEntrance = false;
+
+        }
+        else {
+
+            screen::bgSpr.fillScreen(0x196b);
+            screen::displayButtonIndications(screen::bgSpr, "", "Menu");
+
+            screen::bgSpr.setTextColor(TFT_WHITE, TFT_WHITE);
+
+            if(!hour::getLocalTime()) {
+                screen::bgSpr.drawCentreString("Error", screen::bgSpr.width()/2, screen::bgSpr.height()*0.4, 4);
+            }
+            else {
+                Serial.println(hour::hourBuffer);
+                screen::bgSpr.drawCentreString("Hora Colombia", screen::bgSpr.width()*0.5, 20, 4);
+
+                screen::bgSpr.drawCentreString(hour::hourBuffer, screen::bgSpr.width()*0.5, screen::bgSpr.height()*0.3, 7);
+                screen::bgSpr.drawCentreString(hour::dayBuffer, screen::bgSpr.width()*0.5, screen::bgSpr.height()*0.6, 4);
+            }
+
         }
 
         if (button::list.at(button::RIGHT_ID)->consumeClick()) {
+            screen::bgSpr.deleteSprite();
             changeMenu(Name::MainMenu);
+
         }
     }
 
