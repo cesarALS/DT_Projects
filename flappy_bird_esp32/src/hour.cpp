@@ -2,7 +2,9 @@
 
 namespace hour {
 
+  std::tm timeInfo;
   bool alreadyInitialized = false;
+  char buffer[80];
 
   bool init() {
 
