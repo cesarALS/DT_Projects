@@ -181,7 +181,7 @@ namespace menus {
             screen::bgSpr.setTextColor(TFT_WHITE, TFT_WHITE);
             if (!hour::alreadyInitialized) {
                 screen::bgSpr.fillScreen(0x196b);
-                screen::bgSpr.drawCentreString("Conectandose", screen::bgSpr.width()/2, screen::bgSpr.height()/2, 4);
+                screen::bgSpr.drawCentreString("Conectandose", screen::bgSpr.width()/2, screen::bgSpr.height()/2-10, 4);
                 screen::bgSpr.pushSprite(screen::PADDING, screen::PADDING);
                 hour::init();
             }
@@ -196,12 +196,13 @@ namespace menus {
 
             screen::bgSpr.setTextColor(TFT_WHITE, TFT_WHITE);
 
+            screen::bgSpr.drawCentreString("Hora Colombia", screen::bgSpr.width()*0.5, 20, 4);
+
+
             if(!hour::getLocalTime()) {
                 screen::bgSpr.drawCentreString("Error", screen::bgSpr.width()/2, screen::bgSpr.height()*0.4, 4);
             }
             else {
-                screen::bgSpr.drawCentreString("Hora Colombia", screen::bgSpr.width()*0.5, 20, 4);
-
                 screen::bgSpr.drawCentreString(hour::hourBuffer, screen::bgSpr.width()*0.5, screen::bgSpr.height()*0.3, 7);
                 screen::bgSpr.drawCentreString(hour::dayBuffer, screen::bgSpr.width()*0.5, screen::bgSpr.height()*0.6, 4);
             }

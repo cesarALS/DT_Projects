@@ -12,7 +12,7 @@ namespace hour {
     WiFi.disconnect(true);
     unsigned long millisMarker = millis();
 
-    Serial.printf("Starting connection to %s\n", SSID);
+    Serial.printf("Starting connection to %s", SSID);
     WiFi.begin(SSID, PASSWORD);
     delay(100);
     while (WiFi.status() != WL_CONNECTED) {
