@@ -24,6 +24,8 @@ namespace hour {
     extern char hourBuffer[20];
     extern char dayBuffer[40];
 
+    extern uint8_t timesTried;
+
     void init();
     bool getLocalTime();
 }

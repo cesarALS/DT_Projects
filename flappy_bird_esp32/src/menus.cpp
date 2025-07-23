@@ -198,8 +198,14 @@ namespace menus {
 
             screen::bgSpr.drawCentreString("Hora Colombia", screen::bgSpr.width()*0.5, 20, 4);
 
+            bool time = false;
 
-            if(!hour::getLocalTime()) {
+            if(hour::timesTried < 3) {
+                time = hour::getLocalTime();
+                if(!time) hour::timesTried++;
+            }
+
+            if(!time) {
                 screen::bgSpr.drawCentreString("Error", screen::bgSpr.width()/2, screen::bgSpr.height()*0.4, 4);
             }
             else {
@@ -208,10 +214,10 @@ namespace menus {
             }
 
             screen::bgSpr.pushSprite(screen::PADDING, screen::PADDING);
-
         }
 
         if (button::list.at(button::RIGHT_ID)->consumeClick()) {
+            hour::timesTried = 0;
             changeMenu(Name::MainMenu);
 
         }
