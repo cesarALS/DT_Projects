@@ -6,6 +6,7 @@ namespace hour {
   bool alreadyInitialized = false;
   char hourBuffer[20];
   char dayBuffer[40];
+  uint8_t timesTried = 0;
 
   void init() {
 
@@ -16,7 +17,7 @@ namespace hour {
     WiFi.begin(SSID, PASSWORD);
     delay(100);
     while (WiFi.status() != WL_CONNECTED) {
-      if(millis()-millisMarker > 15000) {
+      if(millis()-millisMarker > 10000) {
         Serial.println("\nFailed to connect");
         return;
       }
